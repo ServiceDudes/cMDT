@@ -7,18 +7,18 @@ cMDT is a Powershell Module to help automize MDT server deployment and configura
   - Creation of Boot Images
   - Lifecycle management for all components
 
-### Version
-1.0.0.4
+You can use this module with a pull server, an SMB share or a local file repository.
 
-### Tech
+### Version
+1.0.0.5
+
+### Prerequisites
 
 cMDT uses a number of components and open resource kit modules. The following are prerequisites for the module and need to be installed to the inteded deployment server:
 * [.Net3.5] - .Net Framweworks 3.5
-* [WMF5] - Windows Management Framework 5.0
+* [WMF5] - Windows Management Framework 5.0 or higher
 * [xSmbShare] - DSC Module available from Powershell Gallery
-* [PowerShellAccessControl] - DSC Module available from GitHub
-
-(If the folder name in the PowerShellAccessControl ZIP from GitHub is named with an "-master" ending rename folder to module name "PowerShellAccessControl" before installing)
+* [cNtfsAccessControl] - DSC Module available from Powershell Gallery
 
 The following prerequisites can automatically be downloaded with the cMDT Module:
 * [MicrosoftDeploymentToolkit2013_x64] - Microsoft Deployment Toolkit (MDT) 2013 Update 1 (6.3.8330.1000)
@@ -33,36 +33,35 @@ And of course the cMDT Module itself which is open source with a [public reposit
 
 To install the cMDT Module from the Powershell Gallery:
 
-```sh
-Find-Module cMDT | Install-Module
-```
-
-### Quick start
-You can use this module with a pull server, an SMB share or a local file repository. The following quick start example use a local file repository. We recommend that you create a Checkpoint/Snapshot of the test deployment server after the initial prerequisites and sourcefiles have been installed/copied.
-
 1. Make sure you have installed all prerequisites.
-2. Install the cMDT module on the test deployment server: Find-Module cMDT | Install-Module
+2. Install the cMDT module (Install-Module cMDT)
 3. Create a source directory (Example: C:\Sources) If you use another driveletter and patch you need to edit the configuration file:
-(C:\Program Files\WindowsPowerShell\Modules\adl_MDT\1.0.0.0\Examples\Deploy_MDT_Server_ConfigurationData.psd1)
+(C:\Program Files\WindowsPowerShell\Modules\cMDT\1.0.0.5\Examples\Deploy_MDT_Server_ConfigurationData.psd1)
 4. Copy install.wim file from a Windows 10 media to C:\Sources and rename the file to install_1.0.0.0.wim
-5. Copy the Zip-files PEExtraFiles_1.0.0.0.zip and Scripts_1.0.0.0.zip from the Powershell cMDT Module install directory (C:\Program Files\WindowsPowerShell\Modules\adl_MDT\1.0.0.0\Sources) to the C:\Sources directory. 
-5. Run Powershell ISE as Administrator and open the file: C:\Program Files\WindowsPowerShell\Modules\cMDT\1.0.0.0\Examples\Deploy_MDT_Server.ps1
-6. Press F5 to run the script. It will take approximately 30 min (Depending on internet capacity and virtualization hardware). The server will reboot ones during this process.
+5. Copy the Zip-files PEExtraFiles_1.0.0.0.zip and Scripts_1.0.0.0.zip from (C:\Program Files\WindowsPowerShell\Modules\cMDT\1.0.0.5\Sources) to the C:\Sources directory. 
+5. Run Powershell ISE as Administrator and open the file: C:\Program Files\WindowsPowerShell\Modules\cMDT\1.0.0.5\Examples\Deploy_MDT_Server.ps1
+7. Press F5 to run the script. It will take approximately 30 min (Depending on internet capacity and virtualization hardware). The server will reboot ones during this process.
+
+### Known bugs
+There is a known bug in the PSDesiredStateConfiguration User Resource that occur when performing a test method for an existing account. This will prevent you from for example changing the password of the MDTLocalAccount from the example contract. You will be able to create this account initially but all verification tests against this account will fail afterwards. This bug has been reported to Microsoft.
 
 ### DscResources
 
 The cMDT Module contain the following DscResources:
 
 * cMDTApplication
+* cMDTApplicationBundle
 * cMDTBootstrapIni
 * cMDTCustomize
 * cMDTCustomSettingsIni
 * cMDTDirectory
 * cMDTDriver
+* cMDTMonitorService (experimental)
 * cMDTOperatingSystem
 * cMDTPersistentDrive
 * cMDTPreReqs
 * cMDTTaskSequence
+* cMDTTaskSequenceStep
 * cMDTUpdateBootImage
 * cWDSBootImage
 * cWDSConfiguration
@@ -118,6 +117,45 @@ cMDTApplication Teamviewer {
 }
 ```
 
+#### cMDTApplicationBundle
+cMDTApplicationBundle is a DscResource that enables download, import of and lifecycle management of application bundles in MDT. Applications can be updated and retrieved from a pull server according to Desired State Configuration principles.
+
+Available parameters with example:
+* [Ensure] - Present/Absent
+* [Version] - Version number
+* [BundleName] - Name
+* [BundledApplications] - Bundled applications
+* [Folder] - MDT path
+* [Enabled] - True/False
+* [Publisher] - Publisher information
+* [Language] - Language
+* [Hidden] - Hidden
+* [PSDriveName] - The PSDrive name for the MDT deployment share
+* [PSDrivePath] - The physical path to the MDT deployment share
+
+The DscResource will import applications according to the following principle:
+* Verify status present or absent
+* If present:
+    * Verify if the application already exist in MDT, and if determine version
+    * If the application does not exist or version number not matched the application will be downloaded
+    * The application will be extracted from the Zip archive and imported in to the MDT
+* If absent:
+    * If application exist it will be removed
+
+Desired State Configuration job example:
+```sh
+cMDTApplicationBundle DeveloperApps {
+    Ensure              = "Present"
+    BundleName          = "DeveloperApps"
+    BundledApplications = @('seven-z-1514-x64_1.0.0.0')
+    Version             = "1.0.0.0"
+    Publisher           = "7-Zip"
+    Language            = "en-US"
+    Hide                = $false
+    Enable              = $true
+    Folder              = "Applications"
+}
+```
 #### cMDTBootstrapIni
 cMDTBootstrapIni is a DscResource that enables configuration and lifecycle management of the BootStrap.ini in MDT. This file can be updated and managed from a pull server according to Desired State Configuration principles.
 
@@ -447,6 +485,38 @@ The DscResource will import applications according to the following principle:
 
 Desired State Configuration job example:
 ```sh
+$ConfigurationData = @{   
+    AllNodes = @(        
+                @{     
+                    NodeName  = "*"
+                } 
+    ) 
+    MDTInstallationSoftware   = @{
+        MDT                   = @(
+            @{  
+                Ensure        = "Present"
+                Name          = "Microsoft Deployment Toolkit 2013 Update 2 (6.3.8330.1000)"
+                ProductId     = "F172B6C7-45DD-4C22-A5BF-1B2C084CADEF"
+                SourcePath    = "https://download.microsoft.com/download/3/0/1/3012B93D-C445-44A9-8BFB-F28EB937B060/MicrosoftDeploymentToolkit2013_x64.msi"
+            }
+        )
+        ADK                   = @(
+            @{                
+                Ensure        = "Present"
+                Name          = "Windows Assessment and Deployment Kit - Windows 10"
+                ProductId     = "82daddb6-d4e0-42cb-988d-1e7f5739e155"
+                SourcePath    = "http://download.microsoft.com/download/3/8/B/38BBCA6A-ADC9-4245-BCD8-DAA136F63C8B/adk/adksetup.exe"
+            }
+        )
+        C01                   = @(
+            @{  
+                Ensure        = "Present"
+                SourcePath    = "http://deploymentresearch.com/mnfiles/modelalias.zip"
+            }
+        )
+    }
+}
+
 cMDTPreReqs MDTPreReqs {
     Ensure = "Present"            
     DownloadPath = "$(TempLocation)"
@@ -559,12 +629,14 @@ cWDSConfiguration wdsConfig {
 
 Want to contribute? Great!
 
-Request us to join out community.
+E-mail us with any changes, questions or suggestions: info@addlevel.se
+
+Or visit us at: http://www.addlevel.se/
 
 License
 ----
 
-**MIT**
+**Free usage!**
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
