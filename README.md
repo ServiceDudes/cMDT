@@ -629,9 +629,7 @@ cWDSConfiguration wdsConfig {
 
 Want to contribute? Great!
 
-E-mail us with any changes, questions or suggestions: info@addlevel.se
-
-Or visit us at: http://www.addlevel.se/
+E-mail us with any changes, questions or suggestions: servicedudes@outlook.com 
 
 License
 ----
