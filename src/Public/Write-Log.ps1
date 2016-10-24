@@ -1,6 +1,6 @@
 ﻿Function Write-Log
 {
-    [CmdletBinding(SupportsShouldProcess = $true)]
+    [CmdletBinding(SupportsShouldProcess = $false)]
     param(
         [Parameter(Mandatory=$True)]
         [ValidateNotNullorEmpty()]

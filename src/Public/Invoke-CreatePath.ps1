@@ -1,6 +1,6 @@
 ﻿Function Invoke-CreatePath
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $false)]
     [OutputType([bool])]
     param(
         [Parameter(Mandatory=$True)]
@@ -59,6 +59,7 @@
                 }
                 Catch
                 {
+                    Write-Error 'Err in Invoke-RemovePath: ' $Error[0]
                     #Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
                 }
             }

@@ -39,6 +39,7 @@
         Catch
         {
             #Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
+            Write-Error 'Err in Invoke-RemovePath: ' $Error[0]
         }
         If ($Recurse)
         {
@@ -55,6 +56,7 @@
                     Catch
                     {
                         #Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
+                        Write-Error 'Err in Invoke-RemovePath: ' $Error[0]
                     }
 
                 }
@@ -73,6 +75,7 @@
         Catch
         {
             #Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
+            Write-Error 'Err in Invoke-RemovePath: ' $Error[0]
         }
 
         If ($Recurse)
@@ -89,7 +92,8 @@
                     }
                     Catch
                     {
-                        Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
+                        Write-Error 'Err in Invoke-RemovePath: ' $Error[0]
+                        #Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
                     }
                 }
             }
