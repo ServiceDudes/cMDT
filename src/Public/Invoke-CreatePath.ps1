@@ -1,6 +1,6 @@
 ﻿Function Invoke-CreatePath
 {
-    [CmdletBinding(SupportsShouldProcess = $false)]
+    [CmdletBinding()]
     [OutputType([bool])]
     param(
         [Parameter(Mandatory=$True)]
@@ -37,7 +37,7 @@
                 }
                 Catch
                 {
-                    Write-Error 'Not  able to create directory: ' + $Script:Directory
+                    Write-Error 'Not able to create directory'
                 }
             }
         }

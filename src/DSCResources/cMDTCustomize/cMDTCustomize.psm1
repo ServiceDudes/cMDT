@@ -41,7 +41,7 @@ class cMDTCustomize
         $filename = "$((Get-FileNameFromPath -Path $this.SourcePath -Separator $separator))_$($this.Version).zip"
 
         # Set folder name as file name without version
-        $foldername = (Get-FileNameFromPath -Path $this.SourcePath -Separator $separator).Split(".")[0]
+        #NOT IN USE: $foldername = (Get-FileNameFromPath -Path $this.SourcePath -Separator $separator).Split(".")[0]
 
         # Determine if file path is an SMB or weblink and should be downloaded
         [bool]$download = $True

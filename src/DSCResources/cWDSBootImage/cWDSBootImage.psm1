@@ -59,7 +59,8 @@ class cWDSBootImage
 
     [bool] DoesBootImageExist()
     {
-       return ((Get-WdsBootImage -ImageName $this.ImageName) -ne $null)
+      #BAD Implementation:  return ((Get-WdsBootImage -ImageName $this.ImageName) -ne $null)
+      return ($null -ne (Get-WdsBootImage -ImageName $this.ImageName))
     }
 
     [void] AddBootImage()

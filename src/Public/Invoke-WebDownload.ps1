@@ -1,6 +1,6 @@
 ﻿Function Invoke-WebDownload
 {
-    [CmdletBinding(SupportsShouldProcess = $false)]
+    [CmdletBinding()]
     [OutputType([bool])]
     param(
         [Parameter(Mandatory=$True)]
