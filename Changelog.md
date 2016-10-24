@@ -1,3 +1,7 @@
+# 1.0.1.1
+## Features:
+- Added AppVeyor integration
+
 # 1.0.0.6
 ## Features:
 - Added recursive folder creation and removal capabilities for resources cMDTApplication, cMDTDirectory, cMDTDriver, cMDTOperatingSystem and cMDTTaskSequence.

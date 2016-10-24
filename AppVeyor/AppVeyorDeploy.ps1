@@ -7,12 +7,11 @@ Write-Host 'Running AppVeyor deploy script' -ForegroundColor Yellow
 #---------------------------------# 
 # Update module manifest          # 
 #---------------------------------# 
-
-$ModuleManifestPath = Join-Path -path "$pwd" -ChildPath ("$env:ModuleName"+'.psd1')
-$ModuleManifest     = Get-Content $ModuleManifestPath -Raw
-
-Write-Host "Updating module manifest to version: $env:APPVEYOR_BUILD_VERSION"
-[regex]::replace($ModuleManifest,'(ModuleVersion = )(.*)',"`$1'$env:APPVEYOR_BUILD_VERSION'") | Out-File -LiteralPath $ModuleManifestPath
+# THIS IS HANDLED BY THE BUILD SCRIPT:
+# $ModuleManifestPath = Join-Path -path "$pwd" -ChildPath ("C:\Projects\cMDT\Builds\$env:ModuleName\$env:APPVEYOR_BUILD_VERSION\""$env:ModuleName"+'.psd1')
+# $ModuleManifest     = Get-Content $ModuleManifestPath -Raw
+# Write-Host "Updating module manifest to version: $env:APPVEYOR_BUILD_VERSION"
+# [regex]::replace($ModuleManifest,'(ModuleVersion = )(.*)',"`$1'$env:APPVEYOR_BUILD_VERSION'") | Out-File -LiteralPath $ModuleManifestPath
 
 #---------------------------------# 
 # Creating NuGet Artifact         # 
@@ -31,10 +30,10 @@ $NuGetParams = @{
     version            = $env:APPVEYOR_BUILD_VERSION
     author             = "ServiceDudes"
     owners             = "ServiceDudes"
-    licenseUrl         = ""
-    projectUrl         = ""
+    licenseUrl         = "https://github.com/ServiceDudes/cMDT/tree/master/LICENSE"
+    projectUrl         = "https://github.com/ServiceDudes/cMDT/tree/master"
     packageDescription = $env:APPVEYOR_PROJECT_NAME
-    tags               = ""
+    tags               = 'cMDT', 'MDT', 'ServiceDudes', 'DSC'
     destinationPath    = "."
 }
 New-Nuspec @NuGetParams
