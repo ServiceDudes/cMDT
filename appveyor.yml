@@ -1,0 +1,34 @@
+ö#---------------------------------# 
+#      environment configuration  # 
+#---------------------------------# 
+version: 1.0.1.{build}
+os: WMF 5
+clone_folder: c:\projects\cMDT
+
+install:
+  - ps: . .\AppVeyor\AppVeyorInstall.ps1
+
+environment:
+  ModuleName: cMDT
+#---------------------------------# 
+#      build configuration        # 
+#---------------------------------# 
+build_script: 
+  - ps: |
+     Write-Host 'Build Action'
+  #- ps: . .\AppVeyor\AppVeyorBuild.ps1
+#---------------------------------# 
+#      test configuration         # 
+#---------------------------------# 
+test_script:
+  - ps: |
+     Write-Host 'Test Action'
+#  - ps: . .\AppVeyor\AppVeyorTest.ps1
+
+#---------------------------------# 
+#      deployment configuration   # 
+#---------------------------------# 
+deploy_script: 
+  - ps: |
+     Write-Host 'Deploy Action'
+#  - ps: . .\AppVeyor\AppveyorDeploy.ps1
