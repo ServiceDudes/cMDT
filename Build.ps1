@@ -1,7 +1,7 @@
 ﻿$moduleName     = "cMDT"
 $allResources   = @( Get-ChildItem -Path $PSScriptRoot\src\DSCResources\*.psm1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
 $allFunctions   = @( Get-ChildItem -Path $PSScriptRoot\src\Public\*.ps1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
-$moduleVersion  = "1.0.0.5"
+$moduleVersion  = "1.0.0.6"
 $combinedModule = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psm1"
 $manifestFile   = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psd1"
 $moduleGuid     = "81624038-5e71-40f8-8905-b1a87afe22d7"
@@ -57,7 +57,8 @@ Foreach($function in @($allFunctions))
 }
 
 Copy-Item -Path "$PSScriptRoot\src\Examples" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Examples" -Recurse -Force
-Copy-Item -Path "$PSScriptRoot\Readme.md" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Readme.md" -Recurse -Force
+Copy-Item -Path "$PSScriptRoot\src\Sources"  -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Sources" -Recurse -Force
+Copy-Item -Path "$PSScriptRoot\Readme.md"    -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Readme.md" -Recurse -Force
 Copy-Item -Path "$PSScriptRoot\Changelog.md" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Changelog.md" -Recurse -Force
 
 $dscResourcesToExport = $dscResourcesToExport.TrimEnd(",")
@@ -79,22 +80,22 @@ ModuleVersion = '$moduleVersion'
 GUID = '$moduleGuid'
 
 # Author of this module
-Author = 'Addlevel'
+Author = 'ServiceDudes'
 
 # Description of the functionality provided by this module
 Description = 'Microsoft Deployment Toolkit installation and configuration as code. A Desired State Configuration module that enables a subscription based delivery of operating systems, models and applications' 
 
 # Company or vendor of this module
-CompanyName = 'Addlevel'
+CompanyName = 'ServiceDudes'
 
 # Copyright statement for this module
-Copyright = '(c) $Year Addlevel. All rights reserved.'
+Copyright = '(c) $Year ServiceDudes. All rights reserved.'
 
 # Description of the functionality provided by this module
 # Description = 'Microsoft Deployment Toolkit installation and configuration as code. A Desired State Configuration module that enables a subscription based delivery of operating systems, models and applications'
 
 # Project site link
-HelpInfoURI = 'https://github.com/addlevel/cMDT'
+HelpInfoURI = 'https://github.com/ServiceDudes/cMDT'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '5.0'
@@ -105,13 +106,13 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('DesiredStateConfiguration', 'DSC', 'DSCResource', 'MDT', 'Microsoft Deployment Toolkit')
+        Tags = @('DesiredStateConfiguration', 'DSC', 'DSCResource', 'MDT', 'MicrosoftDeploymentToolkit')
 
         # A URL to the license for this module.
-        LicenseUri = 'https://github.com/addlevel/cMDT'
+        LicenseUri = 'https://github.com/ServiceDudes/cMDT'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/addlevel/cMDT'
+        ProjectUri = 'https://github.com/ServiceDudes/cMDT'
 
         # A URL to an icon representing this module.
         # IconUri = ''

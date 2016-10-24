@@ -1,4 +1,4 @@
-# 1.0.0.5
+# 1.0.0.6
 ## Features:
 - Added recursive folder creation and removal capabilities for resources cMDTApplication, cMDTDirectory, cMDTDriver, cMDTOperatingSystem and cMDTTaskSequence.
 - Simplified logic to deployment example scripts.
