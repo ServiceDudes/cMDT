@@ -14,28 +14,38 @@
         [string]$PSDrivePath
     )
 
-    [bool]$present = $false
-
-    if (($PSDrivePath) -and ($PSDriveName))
+    Begin
     {
-
-        Import-MicrosoftDeploymentToolkitModule
-
-        if (New-PSDrive -Name $PSDriveName -PSProvider "MDTProvider" -Root $PSDrivePath -Verbose:$false | `            Test-Path -Path $Path -ErrorAction Ignore)
-        {
-            $present = $true
-        }
-
-    }
-    else
-    {
-
-        if (Test-Path -Path $Path -ErrorAction Ignore)
-        {
-            $present = $true
-        }
-
+        [bool]$present = $false
     }
 
-    return $present
+    Process
+    {
+        if (($PSDrivePath) -and ($PSDriveName))
+        {
+
+            Import-MicrosoftDeploymentToolkitModule
+
+            if (New-PSDrive -Name $PSDriveName -PSProvider "MDTProvider" -Root $PSDrivePath -Verbose:$false | `                Test-Path -Path $Path -ErrorAction Ignore)
+            {
+                $present = $true
+            }
+
+        }
+        else
+        {
+
+            if (Test-Path -Path $Path -ErrorAction Ignore)
+            {
+                $present = $true
+            }
+
+    }
+
+    }
+
+    End
+    {
+        return $present
+    }
 }

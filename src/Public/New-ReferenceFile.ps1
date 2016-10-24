@@ -10,14 +10,24 @@
         [Parameter()]
         [string]$PSDrivePath
     )
-    if (($PSDrivePath) -and ($PSDriveName))
-    {
 
-        Import-MicrosoftDeploymentToolkitModule        New-PSDrive -Name $PSDriveName -PSProvider "MDTProvider" -Root $PSDrivePath -Verbose:$false | `        New-Item -Type File -Path $Path -Force -Verbose:$False     
+    Begin
+    {
     }
-    else
+    Process
     {
+        if (($PSDrivePath) -and ($PSDriveName))
+        {
 
-        New-Item -Type File -Path $Path -Force -Verbose:$False  
+            Import-MicrosoftDeploymentToolkitModule            New-PSDrive -Name $PSDriveName -PSProvider "MDTProvider" -Root $PSDrivePath -Verbose:$false | `            New-Item -Type File -Path $Path -Force -Verbose:$False     
+        }
+        else
+        {
+
+            New-Item -Type File -Path $Path -Force -Verbose:$False  
+        }
+    }
+    End
+    {
     }
 }

@@ -37,7 +37,7 @@
                 }
                 Catch
                 {
-                    #Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
+                    Write-Error 'Not  able to create directory: ' + $Script:Directory
                 }
             }
         }
