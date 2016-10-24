@@ -33,7 +33,7 @@ $NuGetParams = @{
     licenseUrl         = "https://github.com/ServiceDudes/cMDT/tree/master/LICENSE"
     projectUrl         = "https://github.com/ServiceDudes/cMDT/tree/master"
     packageDescription = $env:APPVEYOR_PROJECT_NAME
-    tags               = 'cMDT', 'MDT', 'ServiceDudes', 'DSC'
+    tags               = 'cMDT by ServiceDudes'
     destinationPath    = "."
 }
 New-Nuspec @NuGetParams
