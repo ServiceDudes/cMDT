@@ -13,16 +13,14 @@ environment:
 #---------------------------------# 
 #      build configuration        # 
 #---------------------------------# 
-build_script: 
-  - ps: |
-     Write-Host 'Build Action'
-  #- ps: . .\AppVeyor\AppVeyorBuild.ps1
+build_script:    
+  - ps: . .\AppVeyor\AppVeyorBuild.ps1
 #---------------------------------# 
 #      test configuration         # 
 #---------------------------------# 
 test_script:
   - ps: |
-     Write-Host 'Test Action'
+      Write-Host 'Test Action'
 #  - ps: . .\AppVeyor\AppVeyorTest.ps1
 
 #---------------------------------# 
@@ -30,5 +28,5 @@ test_script:
 #---------------------------------# 
 deploy_script: 
   - ps: |
-     Write-Host 'Deploy Action'
+      Write-Host 'Deploy Action'
 #  - ps: . .\AppVeyor\AppveyorDeploy.ps1
