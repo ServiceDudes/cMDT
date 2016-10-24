@@ -19,9 +19,7 @@ build_script:
 #      test configuration         # 
 #---------------------------------# 
 test_script:
-  - ps: |
-      Write-Host 'Test Action'
-#  - ps: . .\AppVeyor\AppVeyorTest.ps1
+  - ps: . .\AppVeyor\AppVeyorTest.ps1
 
 #---------------------------------# 
 #      deployment configuration   # 
