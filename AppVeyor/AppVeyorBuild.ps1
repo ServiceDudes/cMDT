@@ -15,4 +15,6 @@ $env:PSModulePath -split ';'
 # BuildScript                     # 
 #---------------------------------# 
 
-Write-Host 'Nothing to build, skipping.....'
+Write-Host 'Running Build.ps1.....' -ForegroundColor Yellow
+& "C:\Project\cMDT\Build.ps1"
+Write-Host '...completed!' -ForegroundColor Green

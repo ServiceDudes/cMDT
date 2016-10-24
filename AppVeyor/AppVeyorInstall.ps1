@@ -14,11 +14,15 @@ Write-Host "Installed NuGet version '$($pkg.version)'"
 # Install Modules                 # 
 #---------------------------------# 
 [version]$ScriptAnalyzerVersion = '1.8.0'
-Write-Host 'Installing Script Analyzer' 
+Write-Host 'Installing Script Analyzer 1.8.0' 
 Install-Module -Name 'PSScriptAnalyzer' -Repository PSGallery -Force -ErrorAction Stop -MaximumVersion $ScriptAnalyzerVersion
 
 Write-Host 'Installing Pester' 
-Install-Module -Name 'Pester','xDSCResourceDesigner' -Repository PSGallery -Force -ErrorAction Stop
+Install-Module -Name 'Pester' -Repository PSGallery -Force -ErrorAction Stop
+
+[version]$TestHelperVersion = '0.3.0.0'
+Write-Host 'Installing DscResourceTestHelper 0.3.0.0' 
+Install-Module -Name 'DscResourceTestHelper' -MaximumVersion $TestHelperVersion -Repository PSGallery -Force -ErrorAction Stop
 
 #---------------------------------# 
 # Update PSModulePath             # 
@@ -29,7 +33,7 @@ $env:PSModulePath = $env:PSModulePath + ";" + "C:\projects\cMDT\Builds"
 #---------------------------------# 
 # Validate                        # 
 #---------------------------------# 
-$RequiredModules = 'PSScriptAnalyzer','Pester','xDSCResourceDesigner'
+$RequiredModules = 'PSScriptAnalyzer','Pester','DscResourceTestHelper'
 $InstalledModules = Get-Module -Name $RequiredModules -ListAvailable
 if ( ($InstalledModules.count -lt $RequiredModules.Count) -or ($Null -eq $InstalledModules)) { 
   throw "Required modules are missing."
