@@ -16,5 +16,5 @@ $env:PSModulePath -split ';'
 #---------------------------------# 
 
 Write-Host 'Running Build.ps1.....' -ForegroundColor Yellow
-& "C:\Project\cMDT\Build.ps1"
+Invoke-Expression "C:\Projects\cMDT\Build.ps1"
 Write-Host '...completed!' -ForegroundColor Green
