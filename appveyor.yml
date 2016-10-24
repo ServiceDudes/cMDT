@@ -11,15 +11,15 @@ install:
 environment:
   ModuleName: cMDT
 #---------------------------------# 
-#      test configuration         # 
-#---------------------------------# 
-test_script:
-  - ps: . .\AppVeyor\AppVeyorTest.ps1
-#---------------------------------# 
 #      build configuration        # 
 #---------------------------------# 
 build_script:    
   - ps: . .\AppVeyor\AppVeyorBuild.ps1
+#---------------------------------# 
+#      test configuration         # 
+#---------------------------------# 
+test_script:
+  - ps: . .\AppVeyor\AppVeyorTest.ps1
 #---------------------------------# 
 #      deployment configuration   # 
 #---------------------------------# 
