@@ -15,5 +15,4 @@ $env:PSModulePath -split ';'
 # BuildScript                     # 
 #---------------------------------# 
 
-Get-ChildItem -Path C:\projects\cMDT -Recurse
 Write-Host 'Nothing to build, skipping.....'

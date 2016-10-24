@@ -24,7 +24,7 @@ Install-Module -Name 'Pester','xDSCResourceDesigner' -Repository PSGallery -Forc
 # Update PSModulePath             # 
 #---------------------------------# 
 Write-Host 'Updating PSModulePath for DSC resource testing'
-$env:PSModulePath = $env:PSModulePath + ";" + "C:\projects"
+$env:PSModulePath = $env:PSModulePath + ";" + "C:\projects\cMDT\Builds"
 
 #---------------------------------# 
 # Validate                        # 
