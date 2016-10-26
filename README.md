@@ -10,7 +10,7 @@ cMDT is a Powershell Module to help automize MDT server deployment and configura
 You can use this module with a pull server, an SMB share or a local file repository.
 
 ### Version
-[CURRENTVERSION]
+[CURRENTVERSIONNR]
 
 ### Build Status
 [![Build status](https://ci.appveyor.com/api/projects/status/sbeyuemipborrikl?svg=true)](https://ci.appveyor.com/project/ulfvins/cmdt)
