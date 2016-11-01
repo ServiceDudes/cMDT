@@ -43,11 +43,7 @@ Configuration DeployMDTServerContract
     Import-DscResource –ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xSmbShare -ModuleVersion 1.1.0.0
     Import-DscResource -ModuleName cNtfsAccessControl -ModuleVersion 1.3.0
-<<<<<<< HEAD
-    Import-DscResource -ModuleName cMDT -ModuleVersion 1.0.0.5
-=======
     Import-DscResource -ModuleName cMDT -ModuleVersion 1.0.0.6
->>>>>>> e9c7115036bf2009b43a8a43bec990d7cca4a904
 
     node $AllNodes.Where{$_.Role -match "MDT Server"}.NodeName
     {
