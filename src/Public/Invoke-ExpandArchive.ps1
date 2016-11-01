@@ -1,6 +1,6 @@
 ﻿Function Invoke-ExpandArchive
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     [OutputType([bool])]
     param(
         [Parameter(Mandatory=$True)]

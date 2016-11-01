@@ -20,6 +20,18 @@ ForEach ($Module in $Modules)
 }
 #>
 
+Function Get-ConfigurationDataAsObject
+{
+    [CmdletBinding()]
+    [OutputType([hashtable])]
+    Param (
+        [Parameter(Mandatory)]
+        [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformation()]
+        [hashtable] $ConfigurationData    
+    )
+    return $ConfigurationData
+}
+
 Configuration DeployMDTServerContract
 {
     Param(
@@ -31,7 +43,7 @@ Configuration DeployMDTServerContract
     Import-DscResource –ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xSmbShare -ModuleVersion 1.1.0.0
     Import-DscResource -ModuleName cNtfsAccessControl -ModuleVersion 1.3.0
-    Import-DscResource -ModuleName cMDT -ModuleVersion 1.0.0.9
+    Import-DscResource -ModuleName cMDT -ModuleVersion 1.0.0.5
 
     node $AllNodes.Where{$_.Role -match "MDT Server"}.NodeName
     {
@@ -560,7 +572,7 @@ $($KeyboardLocalePE)
 
 
 #Get configuration data
-$ConfigurationData = Invoke-Expression (Get-Content -Path "$PSScriptRoot\Deploy_MDT_Server_ConfigurationData.psd1" -Raw)
+[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData "$PSScriptRoot\Deploy_MDT_Server_ConfigurationData.psd1"
 
 #Create DSC MOF job
 DeployMDTServerContract -OutputPath "$PSScriptRoot\MDT-Deploy_MDT_Server" -ConfigurationData $ConfigurationData
@@ -571,5 +583,5 @@ Set-DscLocalConfigurationManager -Path "$PSScriptRoot\MDT-Deploy_MDT_Server" -Ve
 #Start DSC MOF job
 Start-DscConfiguration -Wait -Force -Verbose -ComputerName "$env:computername" -Path "$PSScriptRoot\MDT-Deploy_MDT_Server"
 
-Write-Host ""
-Write-Host "AddLevel Deploy MDT Server Builder completed!"
+Write-Output ""
+Write-Output "AddLevel Deploy MDT Server Builder completed!"

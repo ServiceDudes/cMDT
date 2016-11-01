@@ -1,6 +1,6 @@
 ﻿Function Invoke-RemovePath
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     [OutputType([bool])]
     param(
         [Parameter(Mandatory=$True)]
@@ -34,11 +34,11 @@
         New-PSDrive -Name $PSDriveName -PSProvider "MDTProvider" -Root $PSDrivePath -Verbose:$False        Try
         {
             Remove-Item -Path $Path -Force -Verbose:$Verbosity
-            #Invoke-Logger -Message "Successfully removed: $Path" -Category "DIRECTORY" -Type "REMOVE"
+            If ($this.Debug) { Invoke-Logger -Message "Successfully removed: $Path" -Severity D -Category "DIRECTORY" -Type "REMOVE" }
         }
         Catch
         {
-            #Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
+            If ($this.Debug) { Invoke-Logger -Severity E -Category "DIRECTORY" -Type "CREATE" -Error $Error[0] }
         }
         If ($Recurse)
         {
@@ -50,11 +50,11 @@
                     Try
                     {
                         Remove-Item -Path $Dir -Force -Verbose:$Verbosity
-                        #Invoke-Logger -Message "Successfully removed: $Dir" -Category "DIRECTORY" -Type "REMOVE"
+                        If ($this.Debug) { Invoke-Logger -Message "Successfully removed: $Dir" -Severity D -Category "DIRECTORY" -Type "REMOVE" }
                     }
                     Catch
                     {
-                        #Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
+                        If ($this.Debug) { Invoke-Logger -Severity E -Category "DIRECTORY" -Type "CREATE" -Error $Error[0] }
                     }
 
                 }
@@ -68,11 +68,11 @@
         Try
         {
             Remove-Item -Path $Path -Force -Verbose:$Verbosity
-            #Invoke-Logger -Message "Successfully removed: $Path" -Category "DIRECTORY" -Type "REMOVE"
+            If ($this.Debug) { Invoke-Logger -Message "Successfully removed: $Path" -Severity D -Category "DIRECTORY" -Type "REMOVE" }
         }
         Catch
         {
-            #Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
+            If ($this.Debug) { Invoke-Logger -Severity E -Category "DIRECTORY" -Type "CREATE" -Error $Error[0] }
         }
 
         If ($Recurse)
@@ -85,7 +85,7 @@
                     Try
                     {
                         Remove-Item -Path $Dir -Force -Verbose:$Verbosity
-                        #Invoke-Logger -Message "Successfully removed: $Dir" -Category "DIRECTORY" -Type "REMOVE"
+                        If ($this.Debug) { Invoke-Logger -Message "Successfully removed: $Dir" -Severity D -Category "DIRECTORY" -Type "REMOVE" }
                     }
                     Catch
                     {

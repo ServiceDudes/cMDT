@@ -36,7 +36,7 @@ Remove-DscConfigurationDocument -Stage Current -Force
 
 Get-Command -Module xDscDiagnostics
 Get-xDscOperation -Newest 2
-Get-xDscOperation -Newest 1 | fl *
+Get-xDscOperation -Newest 1 | Format-List *
 Get-xDscOperation -Newest 1 | Show-Object
 
 

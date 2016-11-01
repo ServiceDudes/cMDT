@@ -1,6 +1,6 @@
 ﻿Function New-ReferenceFile
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         [Parameter(Mandatory=$True)]
         [ValidateNotNullorEmpty()]

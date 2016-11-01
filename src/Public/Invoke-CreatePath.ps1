@@ -1,6 +1,6 @@
 ﻿Function Invoke-CreatePath
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     [OutputType([bool])]
     param(
         [Parameter(Mandatory=$True)]
@@ -31,13 +31,13 @@
                 Try
                 {
                     New-Item -ItemType Directory -Path $Script:Directory  -Verbose
-                    #Invoke-Logger -Message "Successfully created: $Directory" -Category "DIRECTORY" -Type "CREATE"
+                    If ($this.Debug) { Invoke-Logger -Message "Successfully created: $Directory" -Severity D -Category "DIRECTORY" -Type "CREATE" }
                     $present = $true
 
                 }
                 Catch
                 {
-                    #Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
+                    If ($this.Debug) { Invoke-Logger -Severity E -Category "DIRECTORY" -Type "CREATE" -Error $Error[0] }
                 }
             }
         }
@@ -54,12 +54,12 @@
                 Try
                 {
                     New-Item -ItemType Directory -Path $Script:Directory -Verbose
-                    #Invoke-Logger -Message "Successfully created: $Directory" -Category "DIRECTORY" -Type "CREATE"
+                    If ($this.Debug) { Invoke-Logger -Message "Successfully created: $Directory" -Severity D -Category "DIRECTORY" -Type "CREATE" }
                     $present = $true
                 }
                 Catch
                 {
-                    #Invoke-Logger -Severity "E" -Category "DIRECTORY" -Type "CREATE" -Error $Error[0]
+                    If ($this.Debug) { Invoke-Logger -Severity E -Category "DIRECTORY" -Type "CREATE" -Error $Error[0] }
                 }
             }
         }

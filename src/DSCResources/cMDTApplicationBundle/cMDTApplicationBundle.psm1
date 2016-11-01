@@ -254,7 +254,7 @@ class cMDTApplicationBundle
         {
             $applicationGuid = Get-ChildItem "$($this.PSDriveName):" -Recurse | 
                         Where-Object {$_.Name -eq $application -and $_.NodeType -eq 'Application'} | 
-                        Select -ExpandProperty guid
+                        Select-Object -ExpandProperty guid
             if ($applicationGuid)
             {
                 $applicationguids += $applicationGuid
