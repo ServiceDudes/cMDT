@@ -10,7 +10,7 @@ cMDT is a Powershell Module to help automize MDT server deployment and configura
 You can use this module with a pull server, an SMB share or a local file repository.
 
 ### Version
-1.0.0.5
+1.0.0.6
 
 ### Prerequisites
 
@@ -36,10 +36,10 @@ To install the cMDT Module from the Powershell Gallery:
 1. Make sure you have installed all prerequisites.
 2. Install the cMDT module (Install-Module cMDT)
 3. Create a source directory (Example: C:\Sources) If you use another driveletter and patch you need to edit the configuration file:
-(C:\Program Files\WindowsPowerShell\Modules\cMDT\1.0.0.5\Examples\Deploy_MDT_Server_ConfigurationData.psd1)
+(C:\Program Files\WindowsPowerShell\Modules\cMDT\1.0.0.6\Examples\Deploy_MDT_Server_ConfigurationData.psd1)
 4. Copy install.wim file from a Windows 10 media to C:\Sources and rename the file to install_1.0.0.0.wim
-5. Copy the Zip-files PEExtraFiles_1.0.0.0.zip and Scripts_1.0.0.0.zip from (C:\Program Files\WindowsPowerShell\Modules\cMDT\1.0.0.5\Sources) to the C:\Sources directory. 
-5. Run Powershell ISE as Administrator and open the file: C:\Program Files\WindowsPowerShell\Modules\cMDT\1.0.0.5\Examples\Deploy_MDT_Server.ps1
+5. Copy the Zip-files PEExtraFiles_1.0.0.0.zip and Scripts_1.0.0.0.zip from (C:\Program Files\WindowsPowerShell\Modules\cMDT\1.0.0.6\Sources) to the C:\Sources directory. 
+5. Run Powershell ISE as Administrator and open the file: C:\Program Files\WindowsPowerShell\Modules\cMDT\1.0.0.6\Examples\Deploy_MDT_Server.ps1
 7. Press F5 to run the script. It will take approximately 30 min (Depending on internet capacity and virtualization hardware). The server will reboot ones during this process.
 
 ### Known bugs
@@ -629,9 +629,7 @@ cWDSConfiguration wdsConfig {
 
 Want to contribute? Great!
 
-E-mail us with any changes, questions or suggestions: info@addlevel.se
-
-Or visit us at: http://www.addlevel.se/
+E-mail us with any changes, questions or suggestions: servicedudes@outlook.com 
 
 License
 ----
