@@ -21,7 +21,7 @@ Configuration MDTServer
     Import-DscResource –ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xSmbShare -ModuleVersion 1.1.0.0
     Import-DscResource -ModuleName cNtfsAccessControl -ModuleVersion 1.3.0
-    Import-DscResource -ModuleName cMDT -ModuleVersion 1.0.0.7
+    Import-DscResource -ModuleName cMDT -ModuleVersion [BUILD_VERSION]
 
     node "MDTServer"
     {

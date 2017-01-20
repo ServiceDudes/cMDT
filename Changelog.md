@@ -1,4 +1,4 @@
-# 1.0.0.7
+# 1.0.1.x
 ## Features:
 - Pre-requisites dependencies moved to configuration data block in examples script.
 - Re-write of the cMDTPreReqs DSC resource.
