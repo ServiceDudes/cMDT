@@ -1,7 +1,7 @@
 ﻿$moduleName     = "cMDT"
 $allResources   = @( Get-ChildItem -Path $PSScriptRoot\src\DSCResources\*.psm1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
 $allFunctions   = @( Get-ChildItem -Path $PSScriptRoot\src\Public\*.ps1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
-$moduleVersion  = "1.0.0.7"
+$moduleVersion  = $env:APPVEYOR_BUILD_VERSION
 $combinedModule = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psm1"
 $manifestFile   = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psd1"
 $moduleGuid     = "81624038-5e71-40f8-8905-b1a87afe22d7"
