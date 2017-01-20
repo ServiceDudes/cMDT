@@ -12,6 +12,9 @@ You can use this module with a pull server, an SMB share or a local file reposit
 ### Version
 1.0.0.7
 
+### Build Status
+[![Build status](https://ci.appveyor.com/api/projects/status/sbeyuemipborrikl?svg=true)](https://ci.appveyor.com/project/ulfvins/cmdt)
+
 ### Prerequisites
 
 cMDT uses a number of components and open resource kit modules. The following are prerequisites for the module and need to be installed to the inteded deployment server:
