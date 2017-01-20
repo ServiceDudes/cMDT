@@ -23,15 +23,18 @@ enum Ensure
 
 Foreach($resource in @($allResources))
 {
+    Write-Output "Resource: $resource"
     Try
     {
         $resourceContent = Get-Content $resource -Raw
+        Write-Output "Content: $resourceContent"
         $combinedResources += $resourceContent.Substring($resourceContent.IndexOf("[DscResource()]"))
 
         if ($resourceContent -match 'class\s*(?<ClassName>\w*)[\r\t]')
         {
             foreach ($match in $Matches.ClassName)
             {
+                Write-Output "Matched DSCResource: $match"
                 [string]$dscResourcesToExport += "'$match',"
             }
         }

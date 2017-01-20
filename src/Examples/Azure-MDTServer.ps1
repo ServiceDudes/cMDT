@@ -1,4 +1,4 @@
-﻿Function Get-ConfigurationDataAsObject
+Function Get-ConfigurationDataAsObject
 {
     [CmdletBinding()]
     [OutputType([hashtable])]
@@ -18,10 +18,10 @@ Configuration MDTServer
     )
 
     #NOTE: Every Module must be constant, DSC Bug?!
-    Import-DscResource –ModuleName PSDesiredStateConfiguration
+    Import-DscResource �ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xSmbShare -ModuleVersion 1.1.0.0
     Import-DscResource -ModuleName cNtfsAccessControl -ModuleVersion 1.3.0
-    Import-DscResource -ModuleName cMDT -ModuleVersion [BUILD_VERSION]
+    Import-DscResource -ModuleName cMDT -ModuleVersion 
 
     node "MDTServer"
     {
@@ -561,3 +561,4 @@ $($KeyboardLocalePE)
 
     }
 }
+
