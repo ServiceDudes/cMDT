@@ -26,8 +26,7 @@ Foreach($resource in @($allResources))
     Write-Output "Resource: $resource"
     Try
     {
-        $resourceContent = Get-Content $resource -Raw
-        Write-Output "Content: $resourceContent"
+        $resourceContent = Get-Content $resource -Raw -Encoding UTF8
         $combinedResources += $resourceContent.Substring($resourceContent.IndexOf("[DscResource()]"))
 
         if ($resourceContent -match 'class\s*(?<ClassName>\w*)[\r\t]')
