@@ -13,9 +13,12 @@ $results     = Invoke-Pester -Script $testFiles -OutputFormat NUnitXml -OutputFi
 
 Write-Host 'Uploading results'
 try {
+  Write-Host "About to upload file: $(Resolve-Path $resultsFile)"
   (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $resultsFile))
+  Write-Host 'Uploading complete' -ForegroundColor Green
 } catch {
   throw "Upload failed."
+  Write-Host 'Uploading failed!'  -ForegroundColor Red
 }
 
 #---------------------------------# 
