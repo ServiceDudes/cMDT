@@ -85,9 +85,11 @@ class cMDTPreReqs
             
             If ($file.split(".")[-1].ToLower() -eq "msi")
             {
-                [string]$msiProductCode = Get-MsiProperties -Path "$($path)\$($file)" -Property ProductCode
+                [string]$msiProductCode = Get-MsiProperty -Path "$($path)\$($file)" -Property ProductCode
                 Try { $msiProductCode = $msiProductCode -split '\s+' -match '\S' }
-                catch { }
+                catch {
+                    Write-Verbose "   Failed to find product code!"
+                }
                 If ($msiProductCode -ne $this.ProductId)
                 {
                     Write-Verbose "   ProductCode mismatch. Upgrade detected."
