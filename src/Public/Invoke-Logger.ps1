@@ -65,7 +65,3 @@
     }
 
 }
-
-#<![LOG[Report state message 0x40000950 to MP]LOG]!><time="01:38:47.034-120" date="07-16-2016" component="SMS_Distribution_Point_Monitoring" context="" type="1" thread="12172" file="smsdpmon.cpp:889">
-#<![LOG[Begin validation of Certificate [Thumbprint 5F1966C815ADC9B25E8D9979917E26B5396D9154] issued to 'winPE.dec.addlevel.net']LOG]!><time="19:25:40.755-120" date="05-27-2016" component="SMSPXE" context="" type="1" thread="7484" file="ccmcert.cpp:1715"> 
-

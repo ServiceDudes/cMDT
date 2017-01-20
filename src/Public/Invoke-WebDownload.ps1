@@ -1,6 +1,6 @@
 ﻿Function Invoke-WebDownload
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     [OutputType([bool])]
     param(
         [Parameter(Mandatory=$True)]
@@ -11,17 +11,14 @@
         [string]$Target
     )
 
+    [bool]$Verbosity
+    If($PSBoundParameters.Verbose)
+    { $Verbosity = $True }
+    Else
+    { $Verbosity = $False }
 
-    Begin
-    {
-        [bool]$Verbosity
-        If($PSBoundParameters.Verbose)
-        { $Verbosity = $True }
-        Else
-        { $Verbosity = $False }
-    }
-    Process
-    {
+    #If(-not(Invoke-TestPath -Path $Target))
+    #{
         If ($Source -like "*/*")
         {
             If (Get-Service BITS | Where-Object {$_.status -eq "running"})
@@ -53,8 +50,5 @@
                 Copy-Item $Source -Destination $Target -Force -Verbose:$Verbosity
             }
         }
-    }
-    End
-    {
-    }
+    #}
 }

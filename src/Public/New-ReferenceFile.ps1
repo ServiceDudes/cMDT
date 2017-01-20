@@ -1,6 +1,6 @@
 ﻿Function New-ReferenceFile
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         [Parameter(Mandatory=$True)]
         [ValidateNotNullorEmpty()]
@@ -10,24 +10,14 @@
         [Parameter()]
         [string]$PSDrivePath
     )
-
-    Begin
+    if (($PSDrivePath) -and ($PSDriveName))
     {
+
+        Import-MicrosoftDeploymentToolkitModule        New-PSDrive -Name $PSDriveName -PSProvider "MDTProvider" -Root $PSDrivePath -Verbose:$false | `        New-Item -Type File -Path $Path -Force -Verbose:$False     
     }
-    Process
+    else
     {
-        if (($PSDrivePath) -and ($PSDriveName))
-        {
 
-            Import-MicrosoftDeploymentToolkitModule            New-PSDrive -Name $PSDriveName -PSProvider "MDTProvider" -Root $PSDrivePath -Verbose:$false | `            New-Item -Type File -Path $Path -Force -Verbose:$False     
-        }
-        else
-        {
-
-            New-Item -Type File -Path $Path -Force -Verbose:$False  
-        }
-    }
-    End
-    {
+        New-Item -Type File -Path $Path -Force -Verbose:$False  
     }
 }

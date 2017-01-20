@@ -10,10 +10,7 @@ cMDT is a Powershell Module to help automize MDT server deployment and configura
 You can use this module with a pull server, an SMB share or a local file repository.
 
 ### Version
-[CURRENTVERSIONNR]
-
-### Build Status
-[![Build status](https://ci.appveyor.com/api/projects/status/sbeyuemipborrikl?svg=true)](https://ci.appveyor.com/project/ulfvins/cmdt)
+1.0.0.7
 
 ### Prerequisites
 
@@ -24,8 +21,8 @@ cMDT uses a number of components and open resource kit modules. The following ar
 * [cNtfsAccessControl] - DSC Module available from Powershell Gallery
 
 The following prerequisites can automatically be downloaded with the cMDT Module:
-* [MicrosoftDeploymentToolkit2013_x64] - Microsoft Deployment Toolkit (MDT) 2013 Update 1 (6.3.8330.1000)
-* [adksetup] - Windows Assessment and Deployment Kit (10.1.10586.0)
+* [MicrosoftDeploymentToolkit2013_x64] - Microsoft Deployment Toolkit (6.3.8443.1000)
+* [adksetup] - Windows Assessment and Deployment Kit (build 8443)
 
 Note: The MDT and ADK versions must compatible for the DSC modules to work.
 

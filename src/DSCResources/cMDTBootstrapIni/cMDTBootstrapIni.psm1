@@ -60,8 +60,12 @@ class cMDTBootstrapIni
         # Import existing file content
         $existingConfiguration = Get-Content -Path $this.Path -Raw #-Encoding UTF8
 
+        $contract = $this.Content.Replace("`n","`r`n")
+        $contract = $contract.Replace("DeployRoot=\\CLIENT","DeployRoot=\\$($env:COMPUTERNAME)")
+        $contract = $contract.Replace("UserDomain=CLIENT","UserDomain=$($env:COMPUTERNAME)")
+
         # Match against content from contract
-        if ($existingConfiguration -eq $this.Content.Replace("`n","`r`n"))
+        if ($existingConfiguration -eq $contract)
         {
             $present = $true   
         }
@@ -72,8 +76,12 @@ class cMDTBootstrapIni
 
     [void] SetContent()
     {
+        $contract = $this.Content.Replace("`n","`r`n")
+        $contract = $contract.Replace("DeployRoot=\\CLIENT","DeployRoot=\\$($env:COMPUTERNAME)")
+        $contract = $contract.Replace("UserDomain=CLIENT","UserDomain=$($env:COMPUTERNAME)")
+
         # Set new file content
-        Set-Content -Path $this.Path -Value $this.Content.Replace("`n","`r`n") -NoNewline -Force #-Encoding UTF8 
+        Set-Content -Path $this.Path -Value $contract -NoNewline -Force #-Encoding UTF8 
     }
     
     [void] SetDefaultContent()

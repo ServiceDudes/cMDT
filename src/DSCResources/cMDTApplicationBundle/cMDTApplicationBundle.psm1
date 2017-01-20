@@ -146,8 +146,7 @@ class cMDTApplicationBundle
         $applicationGuids = $this.GetApplicationGuids()
 
         # Compare GUID:s to check if update is needed
-        #BAD Implement: if ((Compare-Object $applicationGuids $bundle.Dependency) -ne $null) {return $true}        
-        if ($null -ne (Compare-Object $applicationGuids $bundle.Dependency)) {return $true}
+        if ((Compare-Object $applicationGuids $bundle.Dependency) -ne $null) {return $true}
 
         # Verify bundle parameter properties
         if ($bundle.ShortName -ne $this.BundleName)            {return $true}

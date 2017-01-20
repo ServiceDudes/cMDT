@@ -95,8 +95,11 @@ class cMDTPersistentDrive
         # Import MicrosoftDeploymentToolkitModule module
         Import-MicrosoftDeploymentToolkitModule
 
+        $sNetworkPath = $this.NetworkPath
+        $sNetworkPath = $sNetworkPath.Replace("\\CLIENT\","\\$($env:COMPUTERNAME)\")
+
         # Create PSDrive
-        New-PSDrive -Name $this.Name -PSProvider "MDTProvider" -Root $this.Path -Description $this.Description -NetworkPath $this.NetworkPath -Verbose:$false | `        # Create MDT persistent drive        Add-MDTPersistentDrive -Verbose
+        New-PSDrive -Name $this.Name -PSProvider "MDTProvider" -Root $this.Path -Description $this.Description -NetworkPath $sNetworkPath -Verbose:$false | `        # Create MDT persistent drive        Add-MDTPersistentDrive -Verbose
 
     }
 
@@ -108,7 +111,10 @@ class cMDTPersistentDrive
 
         Write-Verbose -Message "Removing MDTPersistentDrive $($this.Name)"
 
+        $sNetworkPath = $this.NetworkPath
+        $sNetworkPath = $sNetworkPath.Replace("\\CLIENT\","\\$($env:COMPUTERNAME)\")
+
         # Create PSDrive
-        New-PSDrive -Name $this.Name -PSProvider "MDTProvider" -Root $this.Path -Description $this.Description -NetworkPath $this.NetworkPath -Verbose:$false | `        # Remove MDT persistent drive        Remove-MDTPersistentDrive -Verbose
+        New-PSDrive -Name $this.Name -PSProvider "MDTProvider" -Root $this.Path -Description $this.Description -NetworkPath $sNetworkPath -Verbose:$false | `        # Remove MDT persistent drive        Remove-MDTPersistentDrive -Verbose
     }
 }
