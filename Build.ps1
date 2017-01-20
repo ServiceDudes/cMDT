@@ -56,10 +56,10 @@ Foreach($function in @($allFunctions))
     }
 }
 
-ForEach ($scriptFile in (Get-ChildItem -Path "$PSScriptRoot\src\Examples" -Filter "*.ps1"))
+ForEach ($scriptFile in (Get-ChildItem -Path "C:\Repo\cMDT\src\Examples" -Filter "*.ps1"))
 {
     $fileContent = Get-Content $scriptFile.FullName -Raw
-    $fileContent -replace "[BUILD_VERSION]", "$($env:APPVEYOR_BUILD_VERSION)" | Set-Content $scriptFile.FullName
+    $fileContent -replace "\[BUILD_VERSION\]", "$($env:APPVEYOR_BUILD_VERSION)" | Set-Content $scriptFile.FullName
 }
 
 Copy-Item -Path "$PSScriptRoot\src\Examples" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Examples" -Recurse -Force
