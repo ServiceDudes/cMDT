@@ -1,3 +1,7 @@
+# 1.0.0.8
+## Bugfixes
+- Minor fix with Test-Path for TS Folder.
+
 # 1.0.0.6
 ## Features:
 - Added recursive folder creation and removal capabilities for resources cMDTApplication, cMDTDirectory, cMDTDriver, cMDTOperatingSystem and cMDTTaskSequence.
