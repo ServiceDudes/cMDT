@@ -1,7 +1,7 @@
 ﻿$moduleName     = "cMDT"
 $allResources   = @( Get-ChildItem -Path $PSScriptRoot\src\DSCResources\*.psm1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
 $allFunctions   = @( Get-ChildItem -Path $PSScriptRoot\src\Public\*.ps1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
-$moduleVersion  = "1.0.0.8"
+$moduleVersion  = $env:APPVEYOR_BUILD_VERSION
 $combinedModule = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psm1"
 $manifestFile   = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psd1"
 $moduleGuid     = "81624038-5e71-40f8-8905-b1a87afe22d7"
@@ -23,15 +23,17 @@ enum Ensure
 
 Foreach($resource in @($allResources))
 {
+    Write-Output "Resource: $resource"
     Try
     {
-        $resourceContent = Get-Content $resource -Raw
+        $resourceContent = Get-Content $resource -Raw -Encoding UTF8
         $combinedResources += $resourceContent.Substring($resourceContent.IndexOf("[DscResource()]"))
 
         if ($resourceContent -match 'class\s*(?<ClassName>\w*)[\r\t]')
         {
             foreach ($match in $Matches.ClassName)
             {
+                Write-Output "Matched DSCResource: $match"
                 [string]$dscResourcesToExport += "'$match',"
             }
         }
@@ -56,8 +58,14 @@ Foreach($function in @($allFunctions))
     }
 }
 
+ForEach ($scriptFile in (Get-ChildItem -Path "$PSScriptRoot\src\Examples" -Filter "*.ps1"))
+{
+    $fileContent = Get-Content $scriptFile.FullName -Raw
+    $fileContent -replace "\[BUILD_VERSION\]", "$($env:APPVEYOR_BUILD_VERSION)" | Set-Content $scriptFile.FullName
+}
+
 Copy-Item -Path "$PSScriptRoot\src\Examples" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Examples" -Recurse -Force
-# Copy-Item -Path "$PSScriptRoot\src\Sources"  -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Sources" -Recurse -Force
+Copy-Item -Path "$PSScriptRoot\src\Sources"  -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Sources" -Recurse -Force
 Copy-Item -Path "$PSScriptRoot\Readme.md"    -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Readme.md" -Recurse -Force
 Copy-Item -Path "$PSScriptRoot\Changelog.md" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Changelog.md" -Recurse -Force
 
@@ -70,8 +78,8 @@ RootModule = '$moduleName.psm1'
 
 DscResourcesToExport = @($dscResourcesToExport)
 
-CmdletsToExport     = @('Compare-Version','Import-MicrosoftDeploymentToolkitModule','Invoke-ExpandArchive','Invoke-RemovePath','Invoke-TestPath','Invoke-CreatePath','Invoke-WebDownload','New-ReferenceFile','Invoke-Logger','Write-Log','Get-Separator','Get-FileNameFromPath','Get-FileTypeFromPath','Get-FolderNameFromPath')
-FunctionsToExport  = @('Compare-Version','Import-MicrosoftDeploymentToolkitModule','Invoke-ExpandArchive','Invoke-RemovePath','Invoke-TestPath','Invoke-CreatePath','Invoke-WebDownload','New-ReferenceFile','Invoke-Logger','Write-Log','Get-Separator','Get-FileNameFromPath','Get-FileTypeFromPath','Get-FolderNameFromPath')
+CmdletsToExport     = @('Compare-Version','Import-MicrosoftDeploymentToolkitModule','Invoke-ExpandArchive','Invoke-RemovePath','Invoke-TestPath','Invoke-CreatePath','Invoke-WebDownload','New-ReferenceFile','Invoke-Logger','Write-Log','Get-Separator','Get-FileNameFromPath','Get-FileTypeFromPath','Get-FolderNameFromPath','Get-MsiProperty')
+FunctionsToExport  = @('Compare-Version','Import-MicrosoftDeploymentToolkitModule','Invoke-ExpandArchive','Invoke-RemovePath','Invoke-TestPath','Invoke-CreatePath','Invoke-WebDownload','New-ReferenceFile','Invoke-Logger','Write-Log','Get-Separator','Get-FileNameFromPath','Get-FileTypeFromPath','Get-FolderNameFromPath','Get-MsiProperty')
 
 # Version number of this module.
 ModuleVersion = '$moduleVersion'

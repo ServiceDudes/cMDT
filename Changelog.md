@@ -1,6 +1,12 @@
-# 1.0.0.8
-## Bugfixes
-- Minor fix with Test-Path for TS Folder.
+# 1.0.1.x
+## Features:
+- Pre-requisites dependencies moved to configuration data block in examples script.
+- Re-write of the cMDTPreReqs DSC resource.
+- New version Microsoft Deployment Toolkit (6.3.8443.1000).
+- New version Windows Assessment and Deployment Kit (build 8443).
+- Automatic support for deployment share update after upgrade of MDT.
+- New role based Azure Automation example scripts.
+- Changed process for importing PSD1 files, Invoke-Expression removed.
 
 # 1.0.0.6
 ## Features:
@@ -15,3 +21,7 @@
 
 ## Bugfixes
 - Fixed a bug which prevented WDS from being configured if the computer was not part of a domain.
+
+## Known bugs
+- The DSC Native User Resource may return an error due to multiple connection failure.
+- The DSC Native Service Resource may fail to start the WDSServer service.

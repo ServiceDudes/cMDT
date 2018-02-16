@@ -1,25 +1,3 @@
-﻿<#
-$Modules =
-@(
-    @{
-        Name            = "xSmbShare"
-        RequiredVersion = "1.1.0.0"
-    },
-    @{
-        Name            = "cNtfsAccessControl"
-        RequiredVersion = "1.3.0"
-    }
-)
-ForEach ($Module in $Modules)
-{
-    If (-not((Get-DscResource -Module $Module.Name -Verbose:$False).Version -eq $Module.RequiredVersion ))
-    {
-        Install-Module -Name $Module.Name -RequiredVersion $Module.RequiredVersion
-    }
-    
-}
-#>
-
 Function Get-ConfigurationDataAsObject
 {
     [CmdletBinding()]
@@ -32,7 +10,7 @@ Function Get-ConfigurationDataAsObject
     return $ConfigurationData
 }
 
-Configuration DeployMDTServerContract
+Configuration MDTServer
 {
     Param(
         [PSCredential]
@@ -40,45 +18,57 @@ Configuration DeployMDTServerContract
     )
 
     #NOTE: Every Module must be constant, DSC Bug?!
-    Import-DscResource –ModuleName PSDesiredStateConfiguration
+    Import-DscResource �ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xSmbShare -ModuleVersion 1.1.0.0
     Import-DscResource -ModuleName cNtfsAccessControl -ModuleVersion 1.3.0
-    Import-DscResource -ModuleName cMDT -ModuleVersion 1.0.0.8
+    Import-DscResource -ModuleName cMDT -ModuleVersion 
 
-    node $AllNodes.Where{$_.Role -match "MDT Server"}.NodeName
+    node "MDTServer"
     {
 
-        $SecurePassword = ConvertTo-SecureString $Node.MDTLocalPassword -AsPlainText -Force
-        $UserName       = $Node.MDTLocalAccount
-        $Credentials    = New-Object System.Management.Automation.PSCredential -ArgumentList $UserName, $SecurePassword
+        $CredentialLocalAccount = Get-AutomationPSCredential -Name $Node.LocalAccount
+        $CredentialLocalAdmin   = Get-AutomationPSCredential -Name $Node.LocalAdmin
+        $CredentialDomainJoin   = Get-AutomationPSCredential -Name $Node.DomainJoin
 
-        [string]$separator = ""
         [bool]$weblink = $false
         If ($Node.SourcePath -like "*/*") { $weblink = $true }
 
         LocalConfigurationManager          {
             RebootNodeIfNeeded = $AllNodes.RebootNodeIfNeeded            ConfigurationMode  = $AllNodes.ConfigurationMode           }
 
-        $Prerequisites = @{}
-
-        ForEach ($Prerequisite in $Node.MDTInstallationSoftware.Keys)   
+        cMDTPreReqs MDT
         {
-            $Prerequisites.Add($Prerequisite, $Node.MDTInstallationSoftware.$Prerequisite.SourcePath)
+            Ensure       = $Node.MDTInstallationSoftware.MDT.Ensure         
+            Name         = $Node.MDTInstallationSoftware.MDT.Name
+            ProductId    = $Node.MDTInstallationSoftware.MDT.ProductId
+            SourcePath   = $Node.MDTInstallationSoftware.MDT.SourcePath
+            DownloadPath = "$($Node.TempLocation)\$($Node.MDTInstallationSoftware.MDT.DownloadPath)\$(($Node.MDTInstallationSoftware.MDT.SourcePath).Split("/")[-1])"
         }
 
-        cMDTPreReqs MDTPreReqs
+        cMDTPreReqs ADK
         {
-            Ensure        = "Present"            
-            DownloadPath  = $Node.TempLocation
-            Prerequisites = $Prerequisites
+            Ensure       = $Node.MDTInstallationSoftware.ADK.Ensure         
+            Name         = $Node.MDTInstallationSoftware.ADK.Name
+            ProductId    = $Node.MDTInstallationSoftware.ADK.ProductId
+            SourcePath   = $Node.MDTInstallationSoftware.ADK.SourcePath
+            DownloadPath = "$($Node.TempLocation)\$($Node.MDTInstallationSoftware.ADK.DownloadPath)\$(($Node.MDTInstallationSoftware.ADK.SourcePath).Split("/")[-1])"
+        }
+
+        cMDTPreReqs C01
+        {
+            Ensure       = $Node.MDTInstallationSoftware.C01.Ensure         
+            Name         = $Node.MDTInstallationSoftware.C01.Name
+            ProductId    = $Node.MDTInstallationSoftware.C01.ProductId
+            SourcePath   = $Node.MDTInstallationSoftware.C01.SourcePath
+            DownloadPath = "$($Node.TempLocation)\$($Node.MDTInstallationSoftware.C01.DownloadPath)\$(($Node.MDTInstallationSoftware.C01.SourcePath).Split("/")[-1])"
         }
 
         User MDTAccessAccount
         {
             Ensure                 = "Present"
-            UserName               = $Node.MDTLocalAccount
-            FullName               = $Node.MDTLocalAccount
-            Password               = $Credentials
+            UserName               = $CredentialLocalAccount.UserName
+            FullName               = $CredentialLocalAccount.UserName
+            Password               = $CredentialLocalAccount
             PasswordChangeRequired = $false
             PasswordNeverExpires   = $true
             Description            = "Managed Client Administrator Account"
@@ -104,13 +94,13 @@ Configuration DeployMDTServerContract
             RemoteInstallPath      = "C:\RemoteInstall"
         }
 
-        Package ADK        {            Ensure                 = $Node.MDTInstallationSoftware.ADK.Ensure            Name                   = $Node.MDTInstallationSoftware.ADK.Name            Path                   = "$($Node.TempLocation)\Windows Assessment and Deployment Kit\adksetup.exe"            ProductId              = $Node.MDTInstallationSoftware.ADK.ProductId            Arguments              = "/quiet /features OptionId.DeploymentTools OptionId.WindowsPreinstallationEnvironment"            ReturnCode             = 0        }
+        Package ADK        {            Ensure                 = $Node.MDTInstallationSoftware.ADK.Ensure            Name                   = $Node.MDTInstallationSoftware.ADK.Name            Path                   = "$($Node.TempLocation)\$($Node.MDTInstallationSoftware.ADK.DownloadPath)\$(($Node.MDTInstallationSoftware.ADK.SourcePath).Split("/")[-1])"            ProductId              = $Node.MDTInstallationSoftware.ADK.ProductId            Arguments              = "/quiet /features OptionId.DeploymentTools OptionId.WindowsPreinstallationEnvironment"            ReturnCode             = 0        } 
 
         Package MDT
         {
             Ensure                 = $Node.MDTInstallationSoftware.MDT.Ensure
             Name                   = $Node.MDTInstallationSoftware.MDT.Name
-            Path                   = "$($Node.TempLocation)\Microsoft Deployment Toolkit\MicrosoftDeploymentToolkit2013_x64.msi"
+            Path                   = "$($Node.TempLocation)\$($Node.MDTInstallationSoftware.MDT.DownloadPath)\$(($Node.MDTInstallationSoftware.MDT.SourcePath).Split("/")[-1])"
             ProductId              = $Node.MDTInstallationSoftware.MDT.ProductId
             ReturnCode             = 0
         }
@@ -148,7 +138,7 @@ Configuration DeployMDTServerContract
             Ensure                 = "Present"
             Name                   = $Node.PSDriveShareName
             Path                   = $Node.PSDrivePath
-            FullAccess             = "$env:COMPUTERNAME\$($Node.MDTLocalAccount)"
+            FullAccess             = $CredentialLocalAccount.UserName
             FolderEnumerationMode  = "AccessBased"
             DependsOn              = "[cMDTDirectory]DeploymentFolder"
         }
@@ -157,7 +147,7 @@ Configuration DeployMDTServerContract
         {
             Ensure                     = "Present"
             Path                       = $Node.PSDrivePath
-            Principal                  = "$env:COMPUTERNAME\$($Node.MDTLocalAccount)"
+            Principal                  = $CredentialLocalAccount.UserName
             AccessControlInformation   = @(
                 cNtfsAccessControlInformation
                 {
@@ -404,10 +394,6 @@ Configuration DeployMDTServerContract
                 If ($IniFile.SkipTimeZone)         { $SkipTimeZone         = "SkipTimeZone=$($IniFile.SkipTimeZone)" }                 Else { $SkipTimeZone         = ";SkipTimeZone=" }
                 If ($IniFile.SkipUserData)         { $SkipUserData         = "SkipUserData=$($IniFile.SkipUserData)" }                 Else { $SkipUserData         = ";SkipUserData=" }
                 If ($IniFile.SkipTaskSequence)     { $SkipTaskSequence     = "SkipTaskSequence=$($IniFile.SkipTaskSequence)" }         Else { $SkipTaskSequence     = ";SkipTaskSequence=" }
-                If ($IniFile.JoinDomain)           { $JoinDomain           = "JoinDomain=$($IniFile.JoinDomain)" }                     Else { $JoinDomain           = ";JoinDomain=" }
-                If ($IniFile.DomainAdmin)          { $DomainAdmin          = "DomainAdmin=$($IniFile.DomainAdmin)" }                   Else { $DomainAdmin          = ";DomainAdmin=" }
-                If ($IniFile.DomainAdminDomain)    { $DomainAdminDomain    = "DomainAdminDomain=$($IniFile.DomainAdminDomain)" }       Else { $DomainAdminDomain    = ";DomainAdminDomain=" }
-                If ($IniFile.DomainAdminPassword)  { $DomainAdminPassword  = "DomainAdminPassword=$($IniFile.DomainAdminPassword)" }   Else { $DomainAdminPassword  = ";DomainAdminPassword=" }
                 If ($IniFile.MachineObjectOU)      { $MachineObjectOU      = "MachineObjectOU=$($IniFile.MachineObjectOU)" }           Else { $MachineObjectOU      = ";MachineObjectOU=" }
                 If ($IniFile.TimeZoneName)         { $TimeZoneName         = "TimeZoneName=$($IniFile.TimeZoneName)" }                 Else { $TimeZoneName         = ";TimeZoneName=" }
                 If ($IniFile.WSUSServer)           { $WSUSServer           = "WSUSServer=$($IniFile.WSUSServer)" }                     Else { $WSUSServer           = ";WSUSServer=" }
@@ -416,6 +402,12 @@ Configuration DeployMDTServerContract
                 If ($IniFile.UILanguage)           { $UILanguage           = "UILanguage=$($IniFile.UILanguage)" }                     Else { $UILanguage           = ";UILanguage=" }
                 If ($IniFile.ProductKey)           { $ProductKey           = "ProductKey=$($IniFile.ProductKey)" }                     Else { $ProductKey           = ";ProductKey=" }
                 If ($IniFile.EventService)         { $EventService         = "EventService=$($IniFile.EventService)" }                 Else { $EventService         = ";EventService=" }
+
+                If ($IniFile.JoinDomain)           { $JoinDomain           = "JoinDomain=$($IniFile.JoinDomain)" }                     Else { $JoinDomain           = ";JoinDomain=" }
+                If ($IniFile.DomainAdminDomain)    { $DomainAdminDomain    = "DomainAdminDomain=$($IniFile.DomainAdminDomain)" }       Else { $DomainAdminDomain    = ";DomainAdminDomain=" }
+
+                If ($CredentialDomainJoin.UserName){ $DomainAdmin          = "DomainAdmin=$($CredentialDomainJoin.UserName)" }         Else { $DomainAdmin          = ";DomainAdmin=" }
+                If ($CredentialDomainJoin)         { $DomainAdminPassword  = "DomainAdminPassword=$($CredentialDomainJoin.GetNetworkCredential().password)" }   Else { $DomainAdminPassword  = ";DomainAdminPassword=" }
 
                 cMDTCustomSettingsIni ini {
                     Ensure    = $IniFile.Ensure
@@ -444,7 +436,7 @@ DoCapture=NO
 OSDComputerName=CLI%ComputerSerialNumber%
 
 ;Local admin password
-AdminPassword=$($Node.LocalAdminPassword)
+AdminPassword=$($CredentialLocalAdmin.GetNetworkCredential().password)
 SLShare=%DeployRoot%\Logs
 $($EventService)
 
@@ -517,8 +509,8 @@ $($DeployRoot)
 SkipBDDWelcome=YES
 
 ;MDT Connect Account
-UserID=$($Node.MDTLocalAccount)
-UserPassword=$($Node.MDTLocalPassword)
+UserID=$($CredentialLocalAccount.UserName)
+UserPassword=$($CredentialLocalAccount.GetNetworkCredential().password)
 UserDomain=$($env:COMPUTERNAME)
 
 ;Keyboard Layout
@@ -570,18 +562,3 @@ $($KeyboardLocalePE)
     }
 }
 
-
-#Get configuration data
-[hashtable]$ConfigurationData = Get-ConfigurationDataAsObject -ConfigurationData "$PSScriptRoot\Deploy_MDT_Server_ConfigurationData.psd1"
-
-#Create DSC MOF job
-DeployMDTServerContract -OutputPath "$PSScriptRoot\MDT-Deploy_MDT_Server" -ConfigurationData $ConfigurationData
-
-#Set DSC LocalConfigurationManager
-Set-DscLocalConfigurationManager -Path "$PSScriptRoot\MDT-Deploy_MDT_Server" -Verbose
-
-#Start DSC MOF job
-Start-DscConfiguration -Wait -Force -Verbose -ComputerName "$env:computername" -Path "$PSScriptRoot\MDT-Deploy_MDT_Server"
-
-Write-Output ""
-Write-Output "AddLevel Deploy MDT Server Builder completed!"

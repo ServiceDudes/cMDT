@@ -255,7 +255,7 @@ class cMDTApplication
                 $present = $false
             }
         }
-        
+
         # Return boolean from test method
         if ($this.Ensure -eq [Ensure]::Present)
         {

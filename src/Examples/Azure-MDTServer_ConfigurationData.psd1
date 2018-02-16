@@ -1,6 +1,6 @@
 ﻿# For instructions of how to edit this file and detailed usage of the module
 # open your prefered Internet browser and use the following link:
-# https://github.com/addlevel/cMDT
+# https://github.com/ServiceDudes/cMDT
 
 @{
     AllNodes = 
@@ -18,19 +18,20 @@
 
         @{
 
-            #Node Settings for the configuration of an MDT Server.
-            NodeName           = "$env:computername"
-            Role               = "MDT Server"
+            #Roles based setting for the configuration of MDT Server.
+            NodeName           = "MDTServer"
 
             #SMB or web link to a pull server
             SourcePath         = "C:\Sources"
 
-            #Local account to create for MDT. Used for making the connection to the deployment share.
-            MDTLocalAccount    = "SVCMDTConnect001"
-            MDTLocalPassword   = "ChangeMe1!"
+            #Key Vault resource for local account used for making the connection to the deployment share.
+            LocalAccount       = "MDTAccessAccount"
 
-            #Local administrator password on deployed clients.
-            LocalAdminPassword   = "ChangeMe1!"
+            #Key Vault resource used as local administrator on deployed clients.
+            LocalAdmin         = "MDTLocalAdmin"
+
+            #Key Vault resource used to join domain for clients.
+            DomainJoin         = "MDTDomainJoin"
 
             #Download and extraction temporary folder
             TempLocation       = "C:\Temp"
@@ -47,26 +48,30 @@
 
             #MDT Software installation prerequisites
             MDTInstallationSoftware   = @{
-                MDT                   = @(
-                    @{  
-                        Ensure        = "Present"
-                        Name          = "Microsoft Deployment Toolkit 2013 Update 2 (6.3.8330.1000)"
-                        ProductId     = "F172B6C7-45DD-4C22-A5BF-1B2C084CADEF"
-                        SourcePath    = "https://download.microsoft.com/download/3/0/1/3012B93D-C445-44A9-8BFB-F28EB937B060/MicrosoftDeploymentToolkit2013_x64.msi"
-                    }
-                )
                 ADK                   = @(
                     @{                
                         Ensure        = "Present"
                         Name          = "Windows Assessment and Deployment Kit - Windows 10"
-                        ProductId     = "82daddb6-d4e0-42cb-988d-1e7f5739e155"
+                        ProductId     = "62D8BE3F-BC1C-D0AF-2D20-724A7A8CFC3B"
                         SourcePath    = "http://download.microsoft.com/download/3/8/B/38BBCA6A-ADC9-4245-BCD8-DAA136F63C8B/adk/adksetup.exe"
+                        DownloadPath  = "Windows Assessment and Deployment Kit"
+                    }
+                )
+                MDT                   = @(
+                    @{  
+                        Ensure        = "Present"
+                        Name          = "Microsoft Deployment Toolkit (6.3.8443.1000)"
+                        ProductId     = "9547DE37-4A70-4194-97EA-ACC3E747254B"
+                        SourcePath    = "https://download.microsoft.com/download/3/3/9/339BE62D-B4B8-4956-B58D-73C4685FC492/MicrosoftDeploymentToolkit_x64.msi"
+                        DownloadPath  = "Microsoft Deployment Toolkit"
                     }
                 )
                 C01                   = @(
                     @{  
                         Ensure        = "Present"
+                        Name          = "modelalias"
                         SourcePath    = "http://deploymentresearch.com/mnfiles/modelalias.zip"
+                        DownloadPath  = "Community\Scripts"
                     }
                 )
             }
@@ -109,7 +114,7 @@
                     SuccessCodeList             = "0 3010"
                 }
             )
-            <#
+
             #Drivers to import
             Drivers   = @(
                 @{  
@@ -139,6 +144,7 @@
             )
 
             #Application bundles to create
+           <#
             ApplicationBundles   = @(
                 @{  
                     Ensure              = "Present"
@@ -195,9 +201,7 @@
                     SkipUserData         = "YES"
                     SkipTaskSequence     = "NO"
                     JoinDomain           = "ads.otherdomain.com"
-                    DomainAdmin          = "MDTDomJoinAccount"
                     DomainAdminDomain    = "ads.otherdomain.com"
-                    DomainAdminPassword  = "ChangeMe1!"
                     MachineObjectOU      = "OU=Win10-Prod,OU=Clients,OU=Container,DC=ads,DC=otherdomain,DC=com"
                     TimeZoneName         = "W. Europe Standard Time"
                     WSUSServer           = ""
