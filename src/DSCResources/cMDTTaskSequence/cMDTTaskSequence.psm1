@@ -110,7 +110,9 @@ class cMDTTaskSequence
         {
 
             # Create path for task sequence
-            Invoke-CreatePath -Path "$($this.PSDriveName):\Task Sequences\$($this.Path.Split("\")[-1])" -PSDriveName $this.PSDriveName -PSDrivePath $this.PSDrivePath -Verbose
+            if(-not (Test-Path $this.Path)){
+                Invoke-CreatePath -Path "$($this.PSDriveName):\Task Sequences\$($this.Path.Split("\")[-1])" -PSDriveName $this.PSDriveName -PSDrivePath $this.PSDrivePath -Verbose
+            }
 
             # Import task sequence
             Import-MDTTaskSequence -path $this.Path -Name $this.Name -Template "Client.xml" -Comments "" -ID $this.ID -Version "1.0" -OperatingSystemPath $OperatingSystemFile -FullName "Windows User" -OrgName "Addlevel" -HomePage "about:blank" -Verbose
