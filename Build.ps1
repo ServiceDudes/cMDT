@@ -1,7 +1,7 @@
 ﻿$moduleName     = "cMDT"
 $allResources   = @( Get-ChildItem -Path $PSScriptRoot\src\DSCResources\*.psm1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
 $allFunctions   = @( Get-ChildItem -Path $PSScriptRoot\src\Public\*.ps1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
-$moduleVersion  = $env:APPVEYOR_BUILD_VERSION
+$moduleVersion  = "1.0.1.0"
 $combinedModule = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psm1"
 $manifestFile   = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psd1"
 $moduleGuid     = "81624038-5e71-40f8-8905-b1a87afe22d7"
@@ -29,7 +29,7 @@ Foreach($resource in @($allResources))
         $resourceContent = Get-Content $resource -Raw -Encoding UTF8
         $combinedResources += $resourceContent.Substring($resourceContent.IndexOf("[DscResource()]"))
 
-        if ($resourceContent -match 'class\s*(?<ClassName>\w*)[\r\t]')
+        if ($resourceContent -match 'class\s*(?<ClassName>\w*)[\r\n\t\s]')
         {
             foreach ($match in $Matches.ClassName)
             {

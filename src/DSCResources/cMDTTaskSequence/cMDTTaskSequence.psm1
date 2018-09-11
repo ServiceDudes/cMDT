@@ -5,17 +5,16 @@
 }
 
 [DscResource()]
-class cMDTTaskSequence
-{
+class cMDTTaskSequence {
 
     [DscProperty(Mandatory)]
     [Ensure] $Ensure
 
     [DscProperty(Key)]
-    [string]$Path
+    [string]$Name
 
     [DscProperty(Key)]
-    [string]$Name
+    [string]$Path
 
     [DscProperty()]
     [string]$OperatingSystemPath
@@ -25,6 +24,12 @@ class cMDTTaskSequence
 
     [DscProperty(Mandatory)]
     [string]$ID
+    
+    [DscProperty(Mandatory)]
+    [string]$Template
+
+    [DscProperty()]
+    [string]$OrgName
 
     [DscProperty(Mandatory)]
     [string]$PSDriveName
@@ -32,48 +37,40 @@ class cMDTTaskSequence
     [DscProperty(Mandatory)]
     [string]$PSDrivePath
 
-    [void] Set()
-    {
+    [void] Set() {
 
         # Determine present/absent
-        if ($this.ensure -eq [Ensure]::Present)
-        {
+        if ($this.ensure -eq [Ensure]::Present) {
 
             # Call function to import task sequence
             $this.ImportTaskSequence()
         }
-        else
-        {
+        else {
 
             # Remove path recursively
-            Invoke-RemovePath -Path "$($this.path)\$($this.name)" -Recurse -Levels 3 -PSDriveName $this.PSDriveName -PSDrivePath $this.PSDrivePath -Verbose
+            Invoke-RemovePath -Path "$($this.PSDriveName):\$($this.path)\$($this.name)" -Recurse -Levels 3 -PSDriveName $this.PSDriveName -PSDrivePath $this.PSDrivePath -Verbose
         }
     }
 
-    [bool] Test()
-    {
+    [bool] Test() {
 
         # Test if path exist
-        $present = Invoke-TestPath -Path "$($this.path)\$($this.name)" -PSDriveName $this.PSDriveName -PSDrivePath $this.PSDrivePath 
+        $present = Invoke-TestPath -Path "$($this.PSDriveName):\$($this.path)\$($this.name)" -PSDriveName $this.PSDriveName -PSDrivePath $this.PSDrivePath 
         
         # Return boolean from test method
-        if ($this.Ensure -eq [Ensure]::Present)
-        {
+        if ($this.Ensure -eq [Ensure]::Present) {
             return $present
         }
-        else
-        {
+        else {
             return -not $present
         }
     }
 
-    [cMDTTaskSequence] Get()
-    {
+    [cMDTTaskSequence] Get() {
         return $this
     }
 
-    [void] ImportTaskSequence()
-    {
+    [void] ImportTaskSequence() {
 
         # Import MicrosoftDeploymentToolkitModule module
         Import-MicrosoftDeploymentToolkitModule
@@ -83,39 +80,34 @@ class cMDTTaskSequence
 
         $OperatingSystemFile = $null
 
-        If ($this.OperatingSystemPath)
-        {
+        If ($this.OperatingSystemPath) {
 
             # Get OS file name
             $OperatingSystemFile = $this.OperatingSystemPath
         }
 
         # Get existing OS file name
-        If ($this.WIMFileName)
-        {
-            $Directory = $this.Name.Replace(" x64","")
-            $Directory = $Directory.Replace(" x32","")
+        If ($this.WIMFileName) {
+            $Directory = $this.Name.Replace(" x64", "")
+            $Directory = $Directory.Replace(" x32", "")
 
             $OperatingSystemFiles = (Get-ChildItem -Path "$($this.PSDriveName):\Operating Systems\$($this.Path.Split("\")[-1])")
-            ForEach ($OSFile in $OperatingSystemFiles)
-            {
-                If ($OSFile.Name -like "*$($this.WIMFileName)*")
-                {
+            ForEach ($OSFile in $OperatingSystemFiles) {
+                If ($OSFile.Name -like "*$($this.WIMFileName)*") {
                     $OperatingSystemFile = "$($this.PSDriveName):\Operating Systems\$($this.Path.Split("\")[-1])\$($OSFile.Name)"
                 }
             }
         }
 
-        If ($OperatingSystemFile)
-        {
+        If ($OperatingSystemFile) {
 
             # Create path for task sequence
-            if(-not (Test-Path $this.Path)){
+            if (-not (Test-Path "$($this.PSDriveName):\$($this.Path)")) {
                 Invoke-CreatePath -Path "$($this.PSDriveName):\Task Sequences\$($this.Path.Split("\")[-1])" -PSDriveName $this.PSDriveName -PSDrivePath $this.PSDrivePath -Verbose
             }
 
             # Import task sequence
-            Import-MDTTaskSequence -path $this.Path -Name $this.Name -Template "Client.xml" -Comments "" -ID $this.ID -Version "1.0" -OperatingSystemPath $OperatingSystemFile -FullName "Windows User" -OrgName "Addlevel" -HomePage "about:blank" -Verbose
+            Import-MDTTaskSequence -Path "$($this.PSDriveName):\$($this.Path)" -Name $this.Name -Template $this.Template -Comments "" -ID $this.ID -Version "1.0" -OperatingSystemPath "$($this.PSDriveName):\$OperatingSystemFile" -FullName "Windows User" -OrgName $this.OrgName -HomePage "about:blank" -Verbose
         }
     }
 }

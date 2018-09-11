@@ -40,7 +40,7 @@ Configuration DeployMDTServerContract
     )
 
     #NOTE: Every Module must be constant, DSC Bug?!
-    Import-DscResource –ModuleName PSDesiredStateConfiguration
+    Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName xSmbShare -ModuleVersion 1.1.0.0
     Import-DscResource -ModuleName cNtfsAccessControl -ModuleVersion 1.3.0
     Import-DscResource -ModuleName cMDT -ModuleVersion 
@@ -56,8 +56,11 @@ Configuration DeployMDTServerContract
         [bool]$weblink = $false
         If ($Node.SourcePath -like "*/*") { $weblink = $true }
 
-        LocalConfigurationManager          {
-            RebootNodeIfNeeded = $AllNodes.RebootNodeIfNeeded            ConfigurationMode  = $AllNodes.ConfigurationMode           }
+        LocalConfigurationManager  
+        {
+            RebootNodeIfNeeded = $AllNodes.RebootNodeIfNeeded
+            ConfigurationMode  = $AllNodes.ConfigurationMode   
+        }
 
         ForEach ($Key in $Node.MDTInstallationSoftware.Keys)
         {
@@ -94,7 +97,8 @@ Configuration DeployMDTServerContract
         {
             Ensure                 = "Present"
             Name                   = "WDS"
-            IncludeAllSubFeature   = $true            LogPath                = "C:\Windows\debug\DSC_WindowsFeature_WindowsDeploymentServices.log"
+            IncludeAllSubFeature   = $true
+            LogPath                = "C:\Windows\debug\DSC_WindowsFeature_WindowsDeploymentServices.log"
         }
 
         cWDSConfiguration wdsConfig
@@ -107,7 +111,15 @@ Configuration DeployMDTServerContract
 
         If ($Node.MDTInstallationSoftware.ADK)
         {
-            Package ADK            {                Ensure                 = $Node.MDTInstallationSoftware.ADK.Ensure                Name                   = $Node.MDTInstallationSoftware.ADK.Name                Path                   = "$($Node.TempLocation)\$($Node.MDTInstallationSoftware.ADK.DownloadPath)\$(($Node.MDTInstallationSoftware.ADK.SourcePath).Split("/")[-1])"                ProductId              = $Node.MDTInstallationSoftware.ADK.ProductId                Arguments              = "/quiet /features OptionId.DeploymentTools OptionId.WindowsPreinstallationEnvironment"                ReturnCode             = 0            }
+            Package ADK
+            {
+                Ensure                 = $Node.MDTInstallationSoftware.ADK.Ensure
+                Name                   = $Node.MDTInstallationSoftware.ADK.Name
+                Path                   = "$($Node.TempLocation)\$($Node.MDTInstallationSoftware.ADK.DownloadPath)\$(($Node.MDTInstallationSoftware.ADK.SourcePath).Split("/")[-1])"
+                ProductId              = $Node.MDTInstallationSoftware.ADK.ProductId
+                Arguments              = "/quiet /features OptionId.DeploymentTools OptionId.WindowsPreinstallationEnvironment"
+                ReturnCode             = 0
+            }
         }
 
         If ($Node.MDTInstallationSoftware.MDT)
@@ -142,7 +154,9 @@ Configuration DeployMDTServerContract
             Ensure                 = "Present"
             Name                   = $Node.TempLocation.Replace("$($Node.TempLocation.Substring(0,2))\","")
             Path                   = $Node.TempLocation.Substring(0,2)
-        }        cMDTDirectory DeploymentFolder
+        }
+
+        cMDTDirectory DeploymentFolder
         {
             Ensure                 = "Present"
             Name                   = $Node.PSDrivePath.Replace("$($Node.PSDrivePath.Substring(0,2))\","")
@@ -551,7 +565,9 @@ $($KeyboardLocalePE)
                 LiteTouchWIMDescription = $Image.LiteTouchWIMDescription
                 FeaturePacks            = $Image.FeaturePacks
                 DependsOn               = "[cMDTDirectory]DeploymentFolder"
-            }                    cWDSBootImage wdsBootImage
+            }
+        
+            cWDSBootImage wdsBootImage
             {
                 Ensure    = $Image.Ensure
                 Version   = $Image.Version
@@ -592,4 +608,87 @@ Start-DscConfiguration -Wait -Force -Verbose -ComputerName "$env:computername" -
 
 Write-Output ""
 Write-Output "AddLevel Deploy MDT Server Builder completed!"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
