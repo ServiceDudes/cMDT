@@ -58,7 +58,7 @@ class cMDTOperatingSystem
             $filename = "$((Get-FileNameFromPath -Path $this.SourcePath -Separator $separator))_$($this.Version).wim"
         }
         If ($this.Debug) { Invoke-Logger -Message "Download file: $filename" -Severity D -Category "cMDTOperatingSystem" -Type SET }
-        
+
         # Set folder name as file name without version
         $foldername = (Get-FileNameFromPath -Path $this.SourcePath -Separator $separator).Split(".")[0]
 
@@ -124,7 +124,7 @@ class cMDTOperatingSystem
 
                 If ($Hash)
                 {
-                    
+
                     # If checksum automatic update defined
 
                     If ($this.Debug) { Invoke-Logger -Message "Download: $download" -Severity D -Category "cMDTOperatingSystem" -Type SET }
@@ -206,7 +206,7 @@ class cMDTOperatingSystem
                 }
 
                 If ($this.Debug) { Invoke-Logger -Message "Invoke-RemovePath -Path '$($this.PSDrivePath)\Operating Systems\$($this.Name)\$($filename)' -Verbose" -Severity D -Category "cMDTOperatingSystem" -Type SET }
-                
+
                 # Remove existing OS file
                 Invoke-RemovePath -Path "$($this.PSDrivePath)\Operating Systems\$($this.Name)\$($filename)" -Verbose
 
@@ -292,7 +292,7 @@ class cMDTOperatingSystem
 
                 # Create path for new OS import
                 Invoke-CreatePath -Path "$($this.Path)" -PSDriveName $this.PSDriveName -PSDrivePath $this.PSDrivePath -Verbose
-                
+
                 # Define new file names for import. Needed to keep names intact in MDT when not performing a new import.
                 $oldname = $null
                 $newname = $null
@@ -311,7 +311,7 @@ class cMDTOperatingSystem
                     If ($this.Debug) { Invoke-Logger -Message "Hash: $Hash" -Severity D -Category "cMDTOperatingSystem" -Type SET }
                     If ($Hash)
                     {
-                        
+
                         # If checksum update was defined
 
                         If ($this.Debug) { Invoke-Logger -Message "Invoke-WebDownload -Source '$($this.SourcePath).wim' -Target $targetdownload -Verbose" -Severity D -Category "cMDTOperatingSystem" -Type SET }
@@ -517,7 +517,7 @@ class cMDTOperatingSystem
                 $present = $false
             }
         }
-        
+
         # Return boolean from test method
         if ($this.Ensure -eq [Ensure]::Present)
         {
@@ -558,7 +558,7 @@ class cMDTOperatingSystem
 
         Try
         {
-            
+
             $ErrorActionPreference = "Stop"
 
             If ($this.Debug) { Invoke-Logger -Message "Import-MDTOperatingSystem -Path $($this.Path) -SourceFile $OperatingSystem -DestinationFolder $($this.Name) -Verbose" -Severity D -Category "cMDTOperatingSystem" -Type FUNCTION }
@@ -577,7 +577,30 @@ class cMDTOperatingSystem
             }
             Finally
             {
-                
+                $this.RenameOperatingSystems()
             }
+    }
+
+    [void] RenameOperatingSystems()
+    {
+        If ($this.Debug) { Invoke-Logger -Message "RenameOperatingSystems" -Type FUNCTION }
+
+        If ($this.Debug) { Invoke-Logger -Message "Import-MicrosoftDeploymentToolkitModule" -Severity D -Category "cMDTOperatingSystem" -Type FUNCTION }
+
+        # Import the MicrosoftDeploymentToolkitModule module
+        # Import-MicrosoftDeploymentToolkitModule
+
+        If ($this.Debug) { Invoke-Logger -Message "New-PSDrive -Name $($this.PSDriveName) -PSProvider 'MDTProvider' -Root $($this.PSDrivePath) -Verbose:$($false)" -Severity D -Category "cMDTOperatingSystem" -Type FUNCTION }
+
+        # Create PSDrive
+        # New-PSDrive -Name $this.PSDriveName -PSProvider "MDTProvider" -Root $this.PSDrivePath -Verbose:$false
+
+        $osPath = "$($this.PSDriveName):\Operating Systems\$($this.Path.Split('\')[-1])"
+        $OperatingSystems = Get-ChildItem $osPath
+
+        ForEach ($os in $OperatingSystems)
+        {
+            Set-ItemProperty "$osPath\$($os.Name)" -Name Name -Value $os.ImageName
         }
+    }
 }

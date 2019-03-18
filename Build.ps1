@@ -1,11 +1,11 @@
-﻿$moduleName     = "cMDT"
-$allResources   = @( Get-ChildItem -Path $PSScriptRoot\src\DSCResources\*.psm1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
-$allFunctions   = @( Get-ChildItem -Path $PSScriptRoot\src\Public\*.ps1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
-$moduleVersion  = "1.0.1.0"
+﻿$moduleName = "cMDT"
+$allResources = @( Get-ChildItem -Path $PSScriptRoot\src\DSCResources\*.psm1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
+$allFunctions = @( Get-ChildItem -Path $PSScriptRoot\src\Public\*.ps1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
+$moduleVersion = "1.0.1.0"
 $combinedModule = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psm1"
-$manifestFile   = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psd1"
-$moduleGuid     = "81624038-5e71-40f8-8905-b1a87afe22d7"
-$year           = (Get-Date).Year
+$manifestFile = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psd1"
+$moduleGuid = "81624038-5e71-40f8-8905-b1a87afe22d7"
+$year = (Get-Date).Year
 [string]$dscResourcesToExport = $null
 
 
@@ -21,45 +21,36 @@ enum Ensure
 
 [string]$combinedResources = $ensureDefiniton
 
-Foreach($resource in @($allResources))
-{
+Foreach ($resource in @($allResources)) {
     Write-Output "Resource: $resource"
-    Try
-    {
+    Try {
         $resourceContent = Get-Content $resource -Raw -Encoding UTF8
         $combinedResources += $resourceContent.Substring($resourceContent.IndexOf("[DscResource()]"))
 
-        if ($resourceContent -match 'class\s*(?<ClassName>\w*)[\r\n\t\s]')
-        {
-            foreach ($match in $Matches.ClassName)
-            {
+        if ($resourceContent -match 'class\s*(?<ClassName>\w*)[\r\n\t\s]') {
+            foreach ($match in $Matches.ClassName) {
                 Write-Output "Matched DSCResource: $match"
                 [string]$dscResourcesToExport += "'$match',"
             }
         }
-        
+
     }
-    Catch
-    {
+    Catch {
         throw $_
     }
 }
 
-Foreach($function in @($allFunctions))
-{
-    Try
-    {
+Foreach ($function in @($allFunctions)) {
+    Try {
         $functionContent = Get-Content $function -Raw
-        $combinedResources += $functionContent.Substring($functionContent.IndexOf("Function"))    
+        $combinedResources += $functionContent.Substring($functionContent.IndexOf("Function"))
     }
-    Catch
-    {
+    Catch {
         throw $_
     }
 }
 
-ForEach ($scriptFile in (Get-ChildItem -Path "$PSScriptRoot\src\Examples" -Filter "*.ps1"))
-{
+ForEach ($scriptFile in (Get-ChildItem -Path "$PSScriptRoot\src\Examples" -Filter "*.ps1")) {
     $fileContent = Get-Content $scriptFile.FullName -Raw
     $fileContent -replace "\[BUILD_VERSION\]", "$($env:APPVEYOR_BUILD_VERSION)" | Set-Content $scriptFile.FullName
 }
@@ -67,7 +58,7 @@ ForEach ($scriptFile in (Get-ChildItem -Path "$PSScriptRoot\src\Examples" -Filte
 Copy-Item -Path "$PSScriptRoot\src\Examples" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Examples" -Recurse -Force
 Copy-Item -Path "$PSScriptRoot\src\Sources"  -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Sources" -Recurse -Force
 Copy-Item -Path "$PSScriptRoot\Readme.md"    -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Readme.md" -Recurse -Force
-Copy-Item -Path "$PSScriptRoot\Changelog.md" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Changelog.md" -Recurse -Force
+# Copy-Item -Path "$PSScriptRoot\Changelog.md" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Changelog.md" -Recurse -Force
 
 $dscResourcesToExport = $dscResourcesToExport.TrimEnd(",")
 $ManifestDefinition = @"
@@ -91,7 +82,7 @@ GUID = '$moduleGuid'
 Author = 'ServiceDudes'
 
 # Description of the functionality provided by this module
-Description = 'Microsoft Deployment Toolkit installation and configuration as code. A Desired State Configuration module that enables a subscription based delivery of operating systems, models and applications' 
+Description = 'Microsoft Deployment Toolkit installation and configuration as code. A Desired State Configuration module that enables a subscription based delivery of operating systems, models and applications'
 
 # Company or vendor of this module
 CompanyName = 'ServiceDudes'
@@ -137,6 +128,7 @@ PrivateData = @{
 }
 "@
 
-If (-not (Test-Path -Path "$PSScriptRoot\Builds\$moduleName\$moduleVersion")) { New-Item -ItemType Directory -Path "$PSScriptRoot\Builds\$moduleName\$moduleVersion" }
+If (-not (Test-Path -Path "$PSScriptRoot\Builds\$moduleName\$moduleVersion")) { New-Item -ItemType Directory -Path "$PSScriptRoot\Builds\$moduleName\$moduleVersion"
+}
 Set-Content -Path $combinedModule -Value $combinedResources
 Set-Content -Path $manifestFile -Value $ManifestDefinition

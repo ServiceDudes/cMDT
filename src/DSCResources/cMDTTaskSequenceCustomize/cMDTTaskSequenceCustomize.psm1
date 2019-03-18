@@ -39,7 +39,7 @@ class cMDTTaskSequenceCustomize {
 
     [DscProperty()]
     [string]$SuccessCodeList = "0 3010"
-  
+
     [DscProperty()]
     [string]$TSVariableName
 
@@ -64,11 +64,14 @@ class cMDTTaskSequenceCustomize {
     [DscProperty()]
     [string]$OSFeatures
 
+    [DscProperty()]
+    [string]$TSPath
+
     [void] Set() {
         $ts = $this.ReadTaskSequenceXML()
 
         if (-not $ts) {
-            throw "$($this.TSFile) can't be found."
+            throw "$($this.TSPath) can't be found."
         }
 
         $query = (Get-NodePathQuery -Path $this.Path)
@@ -88,6 +91,8 @@ class cMDTTaskSequenceCustomize {
             "Windows 10"           = 13
             "Windows 2016"         = 14
             "Windows 2016 Core"    = 15
+            "Windows 2019"         = 15
+            "Windows 2019 Core"    = 15
         }
 
         $tsType = @{
@@ -121,12 +126,12 @@ class cMDTTaskSequenceCustomize {
                 $this.ValidateOsName($oSIndex)
                 $this.UninstallRolesAndFeatures($ts, $parentGroup, $oSIndex)
             }
-            default { 
-                throw "$($this.Type) is not a known Type. `nValid values: $($tsType.Values)" 
+            default {
+                throw "$($this.Type) is not a known Type. `nValid values: $($tsType.Values)"
             }
         }
 
-        $ts.Save($this.TSFile)
+        $ts.Save($this.TSPath)
     }
 
     [bool] Test() {
@@ -147,11 +152,21 @@ class cMDTTaskSequenceCustomize {
         return $this
     }
 
+    [void] SetTaskSequenceFilePath() {
+        If (-not $this.PSDrivePath) {
+            throw "$($this.PSDrivePath) can't be null."
+        }
+
+        $this.TSPath = "$($this.PSDrivePath)\Control\$($this.TSFile)"
+    }
+
     [xml] ReadTaskSequenceXML() {
-        $xml = [xml](Get-Content -Path "$($this.TSFile)")
+        $this.SetTaskSequenceFilePath()
+
+        $xml = [xml](Get-Content -Path $this.TSPath)
 
         if (-not $xml) {
-            throw "$($this.TSFile) can't be found."
+            throw "$($this.TSPath) can't be found."
         }
 
         return $xml
@@ -188,9 +203,9 @@ class cMDTTaskSequenceCustomize {
 
         $action = $ts.CreateElement("action")
         $action.AppendChild($ts.CreateTextNode("$($this.Command)"))
-                                        
+
         $varList = $ts.CreateElement("defaultVarList")
-        
+
         $var1 = $ts.CreateElement("variable")
         $var1.SetAttribute("name", "RunAsUser")
         $var1.SetAttribute("property", "RunAsUser")
@@ -239,7 +254,7 @@ class cMDTTaskSequenceCustomize {
         $action.AppendChild($ts.CreateTextNode("smsboot.exe /target:WinPE"))
 
         $varList = $ts.CreateElement("defaultVarList")
-        
+
         $var1 = $ts.CreateElement("variable")
         $var1.SetAttribute("name", "SMSRebootMessage")
         $var1.SetAttribute("property", "Message")
@@ -270,7 +285,7 @@ class cMDTTaskSequenceCustomize {
         }
 
         Import-MicrosoftDeploymentToolkitModule
-        
+
         New-PSDrive -Name $this.PSDriveName -PSProvider "MDTProvider" -Root $this.PSDrivePath -Verbose:$false
 
         $app = Get-ChildItem -Path "$($this.PSDriveName):\Applications" -Recurse | Where-Object { $_.Name -eq $this.Name -and (-not $_.PSIsContainer) }
@@ -296,7 +311,7 @@ class cMDTTaskSequenceCustomize {
         $action.AppendChild($ts.CreateTextNode('cscript.exe "%SCRIPTROOT%\ZTIApplications.wsf"'))
 
         $varList = $ts.CreateElement("defaultVarList")
-        
+
         $var1 = $ts.CreateElement("variable")
         $var1.SetAttribute("name", "ApplicationGUID")
         $var1.SetAttribute("property", "ApplicationGUID")
@@ -336,7 +351,7 @@ class cMDTTaskSequenceCustomize {
         $action.AppendChild($ts.CreateTextNode('cscript.exe "%SCRIPTROOT%\ZTISetVariable.wsf"'))
 
         $varList = $ts.CreateElement("defaultVarList")
-        
+
         $var1 = $ts.CreateElement("variable")
         $var1.SetAttribute("name", "VariableName")
         $var1.SetAttribute("property", "VariableName")
@@ -366,9 +381,9 @@ class cMDTTaskSequenceCustomize {
         $step.SetAttribute("disable", "false")
         $step.SetAttribute("continueOnError", "false")
         $step.SetAttribute("successCodeList", $this.SuccessCodeList)
-        
+
         $step.SetAttribute("runIn", "WinPEandFullOS")
-                                                
+
         $varList = $ts.CreateElement("defaultVarList")
 
         $index = $ts.CreateElement("variable")
@@ -403,7 +418,7 @@ class cMDTTaskSequenceCustomize {
 
         $this.AddStepToTaskSequence($step, $parentGroup)
     }
-  
+
     [void] UninstallRolesAndFeatures($ts, $parentGroup, $oSIndex) {
         $step = $ts.CreateElement("step")
 
@@ -414,9 +429,9 @@ class cMDTTaskSequenceCustomize {
         $step.SetAttribute("disable", "false")
         $step.SetAttribute("continueOnError", "false")
         $step.SetAttribute("successCodeList", $this.SuccessCodeList)
-        
+
         $step.SetAttribute("runIn", "WinPEandFullOS")
-                                                
+
         $varList = $ts.CreateElement("defaultVarList")
 
         $index = $ts.CreateElement("variable")
