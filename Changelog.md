@@ -1,4 +1,9 @@
-# 1.0.1.x
+# 1.0.2.0
+## Features:
+- Update to Readme.md with generic version.
+- 
+
+# 1.0.1.0
 ## Features:
 - Pre-requisites dependencies moved to configuration data block in examples script.
 - Re-write of the cMDTPreReqs DSC resource.
