@@ -1,11 +1,12 @@
-﻿$moduleName = "cMDT"
-$allResources = @( Get-ChildItem -Path $PSScriptRoot\src\DSCResources\*.psm1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
-$allFunctions = @( Get-ChildItem -Path $PSScriptRoot\src\Public\*.ps1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
-$moduleVersion = "1.0.2.0"
+﻿$moduleName     = "cMDT"
+$allResources   = @( Get-ChildItem -Path $PSScriptRoot\src\DSCResources\*.psm1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
+$allFunctions   = @( Get-ChildItem -Path $PSScriptRoot\src\Sources\*.ps1 -ErrorAction SilentlyContinue -Recurse | Sort-Object)
+$moduleVersion  = "1.0.2.0"
 $combinedModule = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psm1"
-$manifestFile = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psd1"
-$moduleGuid = "81624038-5e71-40f8-8905-b1a87afe22d7"
-$year = (Get-Date).Year
+$manifestFile   = "$PSScriptRoot\Builds\$moduleName\$moduleVersion\$ModuleName.psd1"
+$moduleGuid     = "81624038-5e71-40f8-8905-b1a87afe22d7"
+$year           = (Get-Date).Year
+
 [string]$dscResourcesToExport = $null
 
 
@@ -55,10 +56,10 @@ ForEach ($scriptFile in (Get-ChildItem -Path "$PSScriptRoot\src\Examples" -Filte
     $fileContent -replace "\[BUILD_VERSION\]", "$($env:APPVEYOR_BUILD_VERSION)" | Set-Content $scriptFile.FullName
 }
 
-Copy-Item -Path "$PSScriptRoot\src\Examples" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Examples" -Recurse -Force
-Copy-Item -Path "$PSScriptRoot\src\Sources"  -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Sources" -Recurse -Force
-Copy-Item -Path "$PSScriptRoot\Readme.md"    -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Readme.md" -Recurse -Force
-# Copy-Item -Path "$PSScriptRoot\Changelog.md" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Changelog.md" -Recurse -Force
+Copy-Item -Path "$PSScriptRoot\src\Examples" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Examples"     -Recurse -Force
+Copy-Item -Path "$PSScriptRoot\src\Sources"  -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Sources"      -Recurse -Force
+Copy-Item -Path "$PSScriptRoot\Readme.md"    -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Readme.md"    -Recurse -Force
+Copy-Item -Path "$PSScriptRoot\Changelog.md" -Destination "$PSScriptRoot\Builds\$moduleName\$moduleVersion\Changelog.md" -Recurse -Force
 
 $dscResourcesToExport = $dscResourcesToExport.TrimEnd(",")
 $ManifestDefinition = @"

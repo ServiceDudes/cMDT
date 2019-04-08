@@ -503,3 +503,4 @@ Start-DscConfiguration -Wait -Force -Verbose -ComputerName "$env:computername" -
 
 Write-Output ""
 Write-Output "FK Deploy MDT Server Builder completed!"
+
